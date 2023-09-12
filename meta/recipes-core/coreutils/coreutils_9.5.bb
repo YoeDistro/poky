@@ -176,8 +176,8 @@ BBCLASSEXTEND = "native nativesdk"
 
 inherit ptest
 
-RDEPENDS:${PN}-ptest += "bash findutils gawk make perl perl-modules python3-core sed shadow"
-
+RDEPENDS:${PN}-ptest += "bash findutils gawk make perl perl-modules python3-core sed shadow packagegroup-core-buildessential locale-base-en-us"
+RDEPENDS:${PN}-ptest:append:libc-musl = " musl-utils musl-locales"
 # -dev automatic dependencies fails as we don't want libmodule-build-perl-dev, its too heavy
 # may need tweaking if DEPENDS changes
 # Can't use ${PN}-dev here since flags with overrides and key expansion not supported
