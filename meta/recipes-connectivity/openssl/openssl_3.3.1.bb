@@ -246,7 +246,7 @@ CONFFILES:openssl-conf = "${sysconfdir}/ssl/openssl.cnf"
 
 RRECOMMENDS:libcrypto += "openssl-conf ${PN}-ossl-module-legacy"
 RDEPENDS:${PN}-misc = "perl"
-RDEPENDS:${PN}-ptest += "openssl-bin perl perl-modules bash sed"
+RDEPENDS:${PN}-ptest += "openssl-bin perl perl-modules perl-module-file-spec-functions bash sed"
 
 RDEPENDS:${PN}-bin += "openssl-conf"
 
