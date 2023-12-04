@@ -1,0 +1,32 @@
+From c5f78aa5871c3930a8e88f329c35fc555d75c76d Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 3 Dec 2023 22:59:12 -0800
+Subject: [PATCH] hex2hcd.c: Include libgen.h
+
+This header is needed for basename declaration. Musl has removed it from
+string.h which exposes this issue.
+
+See
+https://git.musl-libc.org/cgit/musl/commit/?id=725e17ed6dff4d0cd22487bb64470881e86a92e7
+
+Upstream-Status: Pending
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ tools/hex2hcd.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/hex2hcd.c b/tools/hex2hcd.c
+index e6dca5a..aaa3e7f 100644
+--- a/tools/hex2hcd.c
++++ b/tools/hex2hcd.c
+@@ -16,6 +16,7 @@
+ #include <stdio.h>
+ #include <errno.h>
+ #include <fcntl.h>
++#include <libgen.h>
+ #include <unistd.h>
+ #include <string.h>
+ #include <getopt.h>
+-- 
+2.43.0
+
