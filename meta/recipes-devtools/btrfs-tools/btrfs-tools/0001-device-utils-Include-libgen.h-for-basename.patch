@@ -1,0 +1,41 @@
+From e548f01765fccd362b7a6050d1b73471e43ded76 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 3 Dec 2023 21:05:52 -0800
+Subject: [PATCH] device-utils: Include libgen.h for basename()
+
+musl has removed the non-prototype declaration of basename from string.h [1]
+which now results in build errors with clang-17+ compiler
+
+include libgen.h for using the posix declaration of the functon.
+
+Fixes
+common/device-utils.c:350:9: error: call to undeclared function 'basename'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  350 |         name = basename(path);
+      |                ^
+common/device-utils.c:350:7: error: incompatible integer to pointer conversion assigning to 'char *' from 'int' [-Wint-conversion]
+  350 |         name = basename(path);
+      |              ^ ~~~~~~~~~~~~~~
+
+[1] https://git.musl-libc.org/cgit/musl/commit/?id=725e17ed6dff4d0cd22487bb64470881e86a92e7
+
+Upstream-Status: Pending
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ common/device-utils.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/common/device-utils.c b/common/device-utils.c
+index a34770f7..7d12f442 100644
+--- a/common/device-utils.c
++++ b/common/device-utils.c
+@@ -22,6 +22,7 @@
+ #include <linux/blkzoned.h>
+ #endif
+ #include <linux/fs.h>
++#include <libgen.h>
+ #include <limits.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+--
+2.43.0
+
