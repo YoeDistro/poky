@@ -166,16 +166,17 @@ TEST_RUNQEMUPARAMS += " slirp"
 
         bitbake('gnupg-native -c addto_recipe_sysroot')
 
+        native_sysroot = get_bb_var("RECIPE_SYSROOT_NATIVE", "gnupg-native")
+
         # Enable package feed signing
         self.gpg_home = tempfile.mkdtemp(prefix="oeqa-feed-sign-")
-        self.track_for_cleanup(self.gpg_home)
+        self.track_for_cleanup(self.gpg_home, dir=os.path.dirname(native_sysroot))
         signing_key_dir = os.path.join(self.testlayer_path, 'files', 'signing')
-        runCmd('gpgconf --list-dirs --homedir %s; gpg -v --batch --homedir %s --import %s' % (self.gpg_home, self.gpg_home, os.path.join(signing_key_dir, 'key.secret')), native_sysroot=get_bb_var("RECIPE_SYSROOT_NATIVE", "gnupg-native"), shell=True)
+        runCmd('gpgconf --list-dirs --homedir %s; gpg -v --batch --homedir %s --import %s' % (self.gpg_home, self.gpg_home, os.path.join(signing_key_dir, 'key.secret')), native_sysroot=native_sysroot, shell=True)
         features += 'INHERIT += "sign_package_feed"\n'
         features += 'PACKAGE_FEED_GPG_NAME = "testuser"\n'
         features += 'PACKAGE_FEED_GPG_PASSPHRASE_FILE = "%s"\n' % os.path.join(signing_key_dir, 'key.passphrase')
         features += 'GPG_PATH = "%s"\n' % self.gpg_home
-        features += 'PSEUDO_IGNORE_PATHS .= ",%s"\n' % self.gpg_home
         self.write_config(features)
 
         bitbake('core-image-full-cmdline socat')
@@ -203,16 +204,17 @@ TEST_RUNQEMUPARAMS += " slirp"
 
         bitbake('gnupg-native -c addto_recipe_sysroot')
 
+        native_sysroot = get_bb_var("RECIPE_SYSROOT_NATIVE", "gnupg-native")
+
         # Enable package feed signing
-        self.gpg_home = tempfile.mkdtemp(prefix="oeqa-feed-sign-")
+        self.gpg_home = tempfile.mkdtemp(prefix="oeqa-feed-sign-", dir=os.path.dirname(native_sysroot))
         self.track_for_cleanup(self.gpg_home)
         signing_key_dir = os.path.join(self.testlayer_path, 'files', 'signing')
-        runCmd('gpgconf --list-dirs --homedir %s; gpg -v --batch --homedir %s --import %s' % (self.gpg_home, self.gpg_home, os.path.join(signing_key_dir, 'key.secret')), native_sysroot=get_bb_var("RECIPE_SYSROOT_NATIVE", "gnupg-native"), shell=True)
+        runCmd('gpgconf --list-dirs --homedir %s; gpg -v --batch --homedir %s --import %s' % (self.gpg_home, self.gpg_home, os.path.join(signing_key_dir, 'key.secret')), native_sysroot=native_sysroot, shell=True)
         features += 'INHERIT += "sign_package_feed"\n'
         features += 'PACKAGE_FEED_GPG_NAME = "testuser"\n'
         features += 'PACKAGE_FEED_GPG_PASSPHRASE_FILE = "%s"\n' % os.path.join(signing_key_dir, 'key.passphrase')
         features += 'GPG_PATH = "%s"\n' % self.gpg_home
-        features += 'PSEUDO_IGNORE_PATHS .= ",%s"\n' % self.gpg_home
         self.write_config(features)
 
         # Build core-image-sato and testimage
