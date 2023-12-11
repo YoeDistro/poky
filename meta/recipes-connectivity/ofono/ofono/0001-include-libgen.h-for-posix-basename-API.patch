@@ -1,0 +1,44 @@
+From 797c507d879fe39a729e7b0e1c726d038d7940e3 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 10 Dec 2023 17:56:21 -0800
+Subject: [PATCH] include libgen.h for posix basename API
+
+Musl implements POSIX version of basename which is provided via libgen.h
+unlike glibc which has both where glibc version is provided via sring.h
+
+This makes it portable across musl and glibc.
+
+Upstream-Status: Pending
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ drivers/qmimodem/qmi.c | 1 +
+ src/log.c              | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/qmimodem/qmi.c b/drivers/qmimodem/qmi.c
+index fe663ec..822875c 100644
+--- a/drivers/qmimodem/qmi.c
++++ b/drivers/qmimodem/qmi.c
+@@ -29,6 +29,7 @@
+ #include <dirent.h>
+ #include <errno.h>
+ #include <fcntl.h>
++#include <libgen.h>
+ #include <unistd.h>
+ #include <stdlib.h>
+ #include <string.h>
+diff --git a/src/log.c b/src/log.c
+index b33a7d2..f660948 100644
+--- a/src/log.c
++++ b/src/log.c
+@@ -24,6 +24,7 @@
+ #endif
+ 
+ #define _GNU_SOURCE
++#include <libgen.h>
+ #include <stdio.h>
+ #include <unistd.h>
+ #include <stdarg.h>
+-- 
+2.43.0
+
