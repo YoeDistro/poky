@@ -13,6 +13,7 @@ DEPENDS = "make-native"
 
 SRC_URI = "${KERNELORG_MIRROR}/software/utils/pciutils/pciutils-${PV}.tar.xz"
 SRC_URI[sha256sum] = "77f11f78298502634d1af50308f15a5788629f6cf45cba376f5009aea4cb4926"
+SRC_URI += "file://0001-sysfs-include-libgen.h-Posix-basename-function.patch"
 
 inherit multilib_header pkgconfig update-alternatives
 
