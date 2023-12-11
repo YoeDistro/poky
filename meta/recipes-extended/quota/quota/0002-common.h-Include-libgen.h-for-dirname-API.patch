@@ -1,0 +1,30 @@
+From 4968f9ba69713ea555399b5b146112557beb2e80 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 10 Dec 2023 17:50:30 -0800
+Subject: [PATCH 2/2] common.h: Include libgen.h for dirname API
+
+for POSIX dirname API, libgen.h is needed to be included
+this is required on non-glibc C libraries e.g. musl which does not
+provide glibc basename implementation.
+
+Upstream-Status: Pending
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ common.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/common.h b/common.h
+index 89722f9..dc2b397 100644
+--- a/common.h
++++ b/common.h
+@@ -7,6 +7,7 @@
+ #ifndef GUARD_COMMON_H
+ #define GUARD_COMMON_H
+ 
++#include <libgen.h>
+ #include <time.h>
+ #include <stdarg.h>
+ 
+-- 
+2.43.0
+
