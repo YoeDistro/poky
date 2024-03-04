@@ -1,0 +1,117 @@
+From 155a8d0b1b9f5e4d121f742078161e2b6d861ff2 Mon Sep 17 00:00:00 2001
+From: Sami Tolvanen <samitolvanen@google.com>
+Date: Wed, 6 Mar 2024 02:12:12 +0000
+Subject: [PATCH] riscv: Fix syscall wrapper for >word-size arguments
+
+The current syscall wrapper macros break 64-bit arguments on
+rv32 because they only guarantee the first N input registers are
+passed to syscalls that accept N arguments. According to the
+calling convention, values twice the word size reside in aligned
+even-odd register pairs and as a result, syscall arguments don't
+always have a direct register mapping on rv32.
+
+Instead of using __MAP(x,__SC_LONG,__VA_ARGS__) to declare the
+type of the __se(_compat)_sys_* functions on rv32, change the
+function declarations to accept `ulong` arguments and alias them
+to the actual syscall implementations, similarly to the existing
+macros in include/linux/syscall.h. This matches previous behavior
+and ensures registers are passed to syscalls as-is, no matter
+which argument types they expect.
+
+Upstream-Status: Pending
+Fixes: 08d0ce30e0e4 ("riscv: Implement syscall wrappers")
+Reported-by: Khem Raj <raj.khem@gmail.com>
+Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ arch/riscv/include/asm/syscall_wrapper.h | 49 +++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 14 deletions(-)
+
+diff --git a/arch/riscv/include/asm/syscall_wrapper.h b/arch/riscv/include/asm/syscall_wrapper.h
+index eeec04b7dae6..70d8f84ad4a0 100644
+--- a/arch/riscv/include/asm/syscall_wrapper.h
++++ b/arch/riscv/include/asm/syscall_wrapper.h
+@@ -12,25 +12,47 @@
+ 
+ asmlinkage long __riscv_sys_ni_syscall(const struct pt_regs *);
+ 
+-#define SC_RISCV_REGS_TO_ARGS(x, ...)				\
+-	__MAP(x,__SC_ARGS					\
+-	      ,,regs->orig_a0,,regs->a1,,regs->a2		\
++#ifdef CONFIG_64BIT
++
++#define SC_RISCV_REGS_TO_ARGS(x, ...)							\
++	__MAP(x,__SC_ARGS								\
++	      ,,regs->orig_a0,,regs->a1,,regs->a2					\
+ 	      ,,regs->a3,,regs->a4,,regs->a5,,regs->a6)
+ 
++#define __SYSCALL_SE_DEFINEx(x, prefix, name, ...)					\
++	static long __se_##prefix##name(__MAP(x,__SC_LONG,__VA_ARGS__));		\
++	static long __se_##prefix##name(__MAP(x,__SC_LONG,__VA_ARGS__))
++
++#else
++
++#define SC_RISCV_REGS_TO_ARGS(x, ...) \
++	regs->orig_a0,regs->a1,regs->a2,regs->a3,regs->a4,regs->a5,regs->a6
++
++#define __SYSCALL_SE_DEFINEx(x, prefix, name, ...)					\
++	__diag_push();									\
++	__diag_ignore(GCC, 8, "-Wattribute-alias",					\
++			"Type aliasing is used to sanitize syscall arguments");		\
++	static long __se_##prefix##name(ulong, ulong, ulong, ulong, ulong, ulong, 	\
++					ulong)						\
++			__attribute__((alias(__stringify(___se_##prefix##name))));	\
++	__diag_pop();									\
++	static long noinline ___se_##prefix##name(__MAP(x,__SC_LONG,__VA_ARGS__));	\
++	static long ___se_##prefix##name(__MAP(x,__SC_LONG,__VA_ARGS__))
++#endif
++
+ #ifdef CONFIG_COMPAT
+ 
+ #define COMPAT_SYSCALL_DEFINEx(x, name, ...)						\
+ 	asmlinkage long __riscv_compat_sys##name(const struct pt_regs *regs);		\
+ 	ALLOW_ERROR_INJECTION(__riscv_compat_sys##name, ERRNO);				\
+-	static long __se_compat_sys##name(__MAP(x,__SC_LONG,__VA_ARGS__));		\
+ 	static inline long __do_compat_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__));	\
+-	asmlinkage long __riscv_compat_sys##name(const struct pt_regs *regs)		\
++	__SYSCALL_SE_DEFINEx(x, compat_sys, name, __VA_ARGS__)				\
+ 	{										\
+-		return __se_compat_sys##name(SC_RISCV_REGS_TO_ARGS(x,__VA_ARGS__));	\
++		return __do_compat_sys##name(__MAP(x,__SC_DELOUSE,__VA_ARGS__));	\
+ 	}										\
+-	static long __se_compat_sys##name(__MAP(x,__SC_LONG,__VA_ARGS__))		\
++	asmlinkage long __riscv_compat_sys##name(const struct pt_regs *regs)		\
+ 	{										\
+-		return __do_compat_sys##name(__MAP(x,__SC_DELOUSE,__VA_ARGS__));	\
++		return __se_compat_sys##name(SC_RISCV_REGS_TO_ARGS(x,__VA_ARGS__));	\
+ 	}										\
+ 	static inline long __do_compat_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
+ 
+@@ -51,19 +73,18 @@ asmlinkage long __riscv_sys_ni_syscall(const struct pt_regs *);
+ #define __SYSCALL_DEFINEx(x, name, ...)						\
+ 	asmlinkage long __riscv_sys##name(const struct pt_regs *regs);		\
+ 	ALLOW_ERROR_INJECTION(__riscv_sys##name, ERRNO);			\
+-	static long __se_sys##name(__MAP(x,__SC_LONG,__VA_ARGS__));		\
+ 	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__));	\
+-	asmlinkage long __riscv_sys##name(const struct pt_regs *regs)		\
+-	{									\
+-		return __se_sys##name(SC_RISCV_REGS_TO_ARGS(x,__VA_ARGS__));	\
+-	}									\
+-	static long __se_sys##name(__MAP(x,__SC_LONG,__VA_ARGS__))		\
++	__SYSCALL_SE_DEFINEx(x, sys, name, __VA_ARGS__)				\
+ 	{									\
+ 		long ret = __do_sys##name(__MAP(x,__SC_CAST,__VA_ARGS__));	\
+ 		__MAP(x,__SC_TEST,__VA_ARGS__);					\
+ 		__PROTECT(x, ret,__MAP(x,__SC_ARGS,__VA_ARGS__));		\
+ 		return ret;							\
+ 	}									\
++	asmlinkage long __riscv_sys##name(const struct pt_regs *regs)		\
++	{									\
++		return __se_sys##name(SC_RISCV_REGS_TO_ARGS(x,__VA_ARGS__));	\
++	}									\
+ 	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
+ 
+ #define SYSCALL_DEFINE0(sname)							\
+-- 
+2.44.0
+
