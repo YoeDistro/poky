@@ -20,6 +20,8 @@ KMETA = "kernel-meta"
 SRC_URI = "git://git.yoctoproject.org/linux-yocto-dev.git;branch=${KBRANCH};name=machine;protocol=https \
            git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;name=meta;branch=master;destsuffix=${KMETA};protocol=https"
 
+SRC_URI += "file://0001-riscv-Fix-syscall-wrapper-for-word-size-arguments.patch"
+
 # Set default SRCREVs. Both the machine and meta SRCREVs are statically set
 # to the korg v3.7 tag, and hence prevent network access during parsing. If
 # linux-yocto-dev is the preferred provider, they will be overridden to
