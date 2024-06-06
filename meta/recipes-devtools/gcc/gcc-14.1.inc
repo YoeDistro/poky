@@ -69,6 +69,7 @@ SRC_URI = "${BASEURI} \
            file://0024-Avoid-hardcoded-build-paths-into-ppc-libgcc.patch \
            file://0025-gcc-testsuite-tweaks-for-mips-OE.patch \
            file://0026-libstdc-Fix-typo-in-_Grapheme_cluster_view-_Iterator.patch \
+           file://0027-Append-GCC-private-include-paths-on-musl-instead-of-.patch \
 "
 
 S = "${TMPDIR}/work-shared/gcc-${PV}-${PR}/${SOURCEDIR}"
