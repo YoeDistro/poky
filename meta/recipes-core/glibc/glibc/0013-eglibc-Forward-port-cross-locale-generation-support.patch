@@ -1,4 +1,4 @@
-From 33e9867758e830e19d181d5a0aa7f2f3cc4a08b3 Mon Sep 17 00:00:00 2001
+From 4e8c9125c3fc3d8627fff98d3c63295a05672471 Mon Sep 17 00:00:00 2001
 From: Khem Raj <raj.khem@gmail.com>
 Date: Wed, 18 Mar 2015 01:33:49 +0000
 Subject: [PATCH] eglibc: Forward port cross locale generation support
