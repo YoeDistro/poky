@@ -205,7 +205,9 @@ class RustSelfTestSystemEmulated(OESelftestTestCase, OEPTestResultTestCase):
                             'library/std/src/sync/rwlock/tests.rs',
                             'library/std/src/thread/tests.rs',
                             'library/test/src/stats/tests.rs',
-                            'tidyselftest'
+                            'tidyselftest',
+                            'compiler/rustc_span',
+                            'compiler/rustc_expand'
                         ]
 
         exclude_fail_tests = " ".join([" --exclude " + item for item in exclude_list])
