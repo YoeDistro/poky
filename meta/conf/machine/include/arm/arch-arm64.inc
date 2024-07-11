@@ -42,3 +42,8 @@ TARGET_FPU = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '${TARGET_FPU_64}
 # support these they're meaningless NOP instructions, so there's very little
 # reason not to.
 TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', ' -mbranch-protection=standard', '', d)}"
+
+# Fix qemu-user crashes while building nodejs/chromium/qtwebengine, defaults ISA is max and it generate SIGILLs
+# qemu: uncaught target signal 4 (Illegal instruction) - core dumped
+# Select the superset ISA
+QEMU_EXTRAOPTIONS_armv8a = "-cpu neoverse-v1"
