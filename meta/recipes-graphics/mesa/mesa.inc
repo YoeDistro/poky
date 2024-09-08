@@ -17,6 +17,8 @@ PE = "2"
 SRC_URI = "https://mesa.freedesktop.org/archive/mesa-${PV}.tar.xz \
            file://0001-meson-misdetects-64bit-atomics-on-mips-clang.patch \
            file://0001-freedreno-don-t-encode-build-path-into-binaries.patch\
+           file://0001-rusticl-meson.build-workaround-for-rusticl-build.patch \
+           file://93e96da9458c9d0348f2390dc0bea67cf140b1a0.patch \
 "
 
 SRC_URI[sha256sum] = "fd077d3104edbe459e2b8597d2757ec065f9bd2d620b8c0b9cc88c2bf9891d02"
@@ -35,7 +37,7 @@ do_install:append() {
 }
 
 DEPENDS = "expat makedepend-native flex-native bison-native libxml2-native zlib chrpath-replacement-native python3-mako-native python3-pyyaml-native gettext-native"
-DEPENDS:append:class-target = " ${@bb.utils.contains('PACKAGECONFIG', 'opencl', 'mesa-native', '', d)}"
+DEPENDS:append:class-target = " ${@bb.utils.contains_any('PACKAGECONFIG', 'opencl-rusticl opencl-clover', ' mesa-native gcc-runtime', '', d)}"
 EXTRANATIVEPATH += "chrpath-native"
 PROVIDES = " \
     ${@bb.utils.contains('PACKAGECONFIG', 'opengl', 'virtual/libgl', '', d)} \
@@ -46,7 +48,7 @@ PROVIDES = " \
     virtual/mesa \
     "
 
-inherit meson pkgconfig python3native gettext features_check
+inherit rust meson pkgconfig python3native gettext features_check
 
 BBCLASSEXTEND = "native nativesdk"
 
@@ -73,8 +75,14 @@ EXTRA_OEMESON = " \
     -Dplatforms='${@",".join("${PLATFORMS}".split())}' \
 "
 
-EXTRA_OEMESON:append:class-target:x86-64 = " ${@bb.utils.contains('PACKAGECONFIG', 'opencl', '-Dintel-clc=system', '', d)}"
-EXTRA_OEMESON:append:class-native:x86-64 = " ${@bb.utils.contains('PACKAGECONFIG', 'opencl', '-Dintel-clc=enabled -Dinstall-intel-clc=true', '', d)}"
+EXTRA_OEMESON:append:class-target:x86-64 = " ${@bb.utils.contains_any('PACKAGECONFIG', 'opencl-rusticl opencl-clover', '-Dintel-clc=system', '', d)}"
+EXTRA_OEMESON:append:class-native:x86-64 = " ${@bb.utils.contains_any('PACKAGECONFIG', 'opencl-rusticl opencl-clover', '-Dintel-clc=enabled -Dinstall-intel-clc=true -Dgallium-rusticl=false', '', d)}"
+
+do_configure:prepend() {
+	sed -i "s|@include@|${STAGING_INCDIR}|" ${S}/src/gallium/frontends/rusticl/meson.build
+	sed -i "s|@include_cpp@|${STAGING_INCDIR}\/c++\/14.2.0|" ${S}/src/gallium/frontends/rusticl/meson.build
+	sed -i "s|@include_cpp_target_sys@|${STAGING_INCDIR}\/c++\/14.2.0\/${TARGET_SYS}|" ${S}/src/gallium/frontends/rusticl/meson.build
+}
 
 def strip_comma(s):
     return s.strip(',')
@@ -104,10 +112,10 @@ PACKAGECONFIG[dri3] = "-Ddri3=enabled, -Ddri3=disabled, xorgproto libxshmfence"
 # Vulkan drivers need dri3 enabled
 # amd could be enabled as well but requires gallium-llvm with llvm >= 3.9
 VULKAN_DRIVERS = ""
-VULKAN_DRIVERS:append:x86 = "${@bb.utils.contains('PACKAGECONFIG', ',opencl', ',intel', '', d)},intel_hasvk,amd"
-VULKAN_DRIVERS:append:x86-64 = "${@bb.utils.contains('PACKAGECONFIG', 'opencl', ',intel', '', d)},intel_hasvk,amd"
+VULKAN_DRIVERS:append:x86 = "${@bb.utils.contains_any('PACKAGECONFIG', 'opencl-rusticl opencl-clover', ',intel', '', d)},intel_hasvk,amd"
+VULKAN_DRIVERS:append:x86-64 = "${@bb.utils.contains_any('PACKAGECONFIG', 'opencl-rusticl opencl-clover', ',intel', '', d)},intel_hasvk,amd"
 # i686 is a 32 bit override for mesa-native
-VULKAN_DRIVERS:append:i686 = "${@bb.utils.contains('PACKAGECONFIG', 'opencl', ',intel', '', d)},intel_hasvk,amd"
+VULKAN_DRIVERS:append:i686 = "${@bb.utils.contains_any('PACKAGECONFIG', 'opencl-rusticl opencl-clover', ',intel', '', d)},intel_hasvk,amd"
 VULKAN_DRIVERS:append ="${@bb.utils.contains('PACKAGECONFIG', 'freedreno', ',freedreno', '', d)}"
 VULKAN_DRIVERS:append ="${@bb.utils.contains('PACKAGECONFIG', 'broadcom', ',broadcom', '', d)}"
 VULKAN_DRIVERS:append ="${@bb.utils.contains('PACKAGECONFIG', 'gallium-llvm', ',swrast', '', d)}"
@@ -141,8 +149,10 @@ PACKAGECONFIG[gles] = "-Dgles1=enabled -Dgles2=enabled, -Dgles1=disabled -Dgles2
 # "egl" requires "opengl"
 PACKAGECONFIG[egl] = "-Degl=enabled, -Degl=disabled"
 
-# "opencl" requires libclc from meta-clang
-PACKAGECONFIG[opencl] = "-Dgallium-opencl=icd -Dopencl-spirv=true,-Dgallium-opencl=disabled -Dopencl-spirv=false,libclc spirv-tools python3-ply-native"
+# "opencl-clover" requires libclc from meta-clang
+PACKAGECONFIG[opencl-clover] = "-Dgallium-opencl=icd -Dopencl-spirv=true,-Dgallium-opencl=disabled -Dopencl-spirv=false,libclc spirv-tools python3-ply-native"
+# "opencl-rusticl" requires libclc, bindgen-cli and clang from meta-clang
+PACKAGECONFIG[opencl-rusticl] = "-Dgallium-rusticl=true,-Dgallium-rusticl=false,libclc bindgen-cli-native python3-ply-native clang"
 
 PACKAGECONFIG[broadcom] = ""
 PACKAGECONFIG[etnaviv] = ",,python3-pycparser-native"
@@ -164,7 +174,7 @@ GALLIUMDRIVERS:append ="${@bb.utils.contains('PACKAGECONFIG', 'freedreno', ',fre
 GALLIUMDRIVERS:append ="${@bb.utils.contains('PACKAGECONFIG', 'vc4', ',vc4', '', d)}"
 GALLIUMDRIVERS:append ="${@bb.utils.contains('PACKAGECONFIG', 'v3d', ',v3d', '', d)}"
 GALLIUMDRIVERS:append ="${@bb.utils.contains('PACKAGECONFIG', 'zink', ',zink', '', d)}"
-GALLIUMDRIVERS:append ="${@bb.utils.contains('PACKAGECONFIG', 'opencl', ',iris', '', d)}"
+GALLIUMDRIVERS:append ="${@bb.utils.contains_any('PACKAGECONFIG', 'opencl-rusticl opencl-clover', ',iris', '', d)}"
 
 # radeonsi requires LLVM
 GALLIUMDRIVERS_RADEONSI = "${@bb.utils.contains('PACKAGECONFIG', 'r600', ',radeonsi', '', d)}"
@@ -239,6 +249,7 @@ PACKAGES =+ "libegl-mesa libegl-mesa-dev \
              libgles2-mesa libgles2-mesa-dev \
              libgles3-mesa libgles3-mesa-dev \
              libopencl-mesa libopencl-mesa-dev \
+             libopencl-rusticl libopencl-rusticl-dev \
              libxatracker libxatracker-dev \
              mesa-megadriver mesa-vulkan-drivers \
              mesa-vdpau-drivers mesa-gallium-drivers mesa-tools \
@@ -333,6 +344,7 @@ FILES:libgles2-mesa = "${libdir}/libGLESv2.so.*"
 FILES:libgl-mesa = "${libdir}/libGL.so.*"
 FILES:libglx-mesa = "${libdir}/libGLX*.so.*"
 FILES:libopencl-mesa = "${libdir}/libMesaOpenCL.so.* ${libdir}/gallium-pipe/*.so ${sysconfdir}/OpenCL/vendors/mesa.icd"
+FILES:libopencl-rusticl = "${libdir}/libRusticlOpenCL.so.* ${sysconfdir}/OpenCL/vendors/rusticl.icd"
 FILES:libglapi = "${libdir}/libglapi.so.*"
 FILES:libosmesa = "${libdir}/libOSMesa.so.*"
 FILES:libxatracker = "${libdir}/libxatracker.so.*"
@@ -347,6 +359,7 @@ FILES:libgles1-mesa-dev = "${libdir}/libGLESv1*.* ${includedir}/GLES ${libdir}/p
 FILES:libgles2-mesa-dev = "${libdir}/libGLESv2.* ${includedir}/GLES2 ${libdir}/pkgconfig/glesv2.pc"
 FILES:libgles3-mesa-dev = "${includedir}/GLES3"
 FILES:libopencl-mesa-dev = "${libdir}/libMesaOpenCL.so"
+FILES:libopencl-rusticl-dev = "${libdir}/libRusticlOpenCL.so"
 FILES:libosmesa-dev = "${libdir}/libOSMesa.* ${includedir}/GL/osmesa.h ${libdir}/pkgconfig/osmesa.pc"
 FILES:libxatracker-dev = "${libdir}/libxatracker.so ${libdir}/libxatracker.la \
                           ${includedir}/xa_tracker.h ${includedir}/xa_composite.h ${includedir}/xa_context.h \

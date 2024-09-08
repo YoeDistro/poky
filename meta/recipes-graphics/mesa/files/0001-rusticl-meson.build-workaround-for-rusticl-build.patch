@@ -1,0 +1,27 @@
+From b34ee4014ee9e3466ebafbd53745d9f9a13379da Mon Sep 17 00:00:00 2001
+From: Markus Volk <f_l_k@t-online.de>
+Date: Thu, 11 Jul 2024 22:52:16 +0200
+Subject: [PATCH] rusticl/meson.build: workaround for rusticl build
+
+Signed-off-by: Markus Volk <f_l_k@t-online.de>
+
+Upstream-Status: Inappropriate [oe-specific]
+---
+ src/gallium/frontends/rusticl/meson.build | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/gallium/frontends/rusticl/meson.build b/src/gallium/frontends/rusticl/meson.build
+index eef09d8f01e..efac4cab964 100644
+--- a/src/gallium/frontends/rusticl/meson.build
++++ b/src/gallium/frontends/rusticl/meson.build
+@@ -211,6 +211,7 @@ rusticl_llvm_bindings_rs = rust.bindgen(
+   c_args : [
+     rusticl_bindgen_c_args,
+     pre_args,
++   '-I@include@', '-I@include_cpp@', '-I@include_cpp_target_sys@'
+   ],
+   dependencies : [
+     dep_clang,
+-- 
+2.45.2
+
