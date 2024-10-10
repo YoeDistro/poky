@@ -13,6 +13,7 @@ PV = "${BASEVER}+git"
 SRC_URI = "git://git.musl-libc.org/musl;branch=master \
            file://0001-Make-dynamic-linker-a-relative-symlink-to-libc.patch \
            file://0002-ldso-Use-syslibdir-and-libdir-as-default-pathes-to-l.patch \
+           file://0001-exit-Replace-SYS_pause-usage-with-a-call.patch \
           "
 
 S = "${WORKDIR}/git"

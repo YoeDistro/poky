@@ -1,0 +1,57 @@
+From 110c90575fb1c0996210e2d42cbaabdc1c965166 Mon Sep 17 00:00:00 2001
+From: Pedro Falcato <pedro.falcato@gmail.com>
+Date: Thu, 10 Oct 2024 12:12:58 +0100
+Subject: [PATCH] exit: Replace SYS_pause usage with a call
+
+Replace SYS_pause (which doesn't exist on some architectures) with a
+call to pause (now __libc_pause). This lets us hide the gnarly #ifdef
+logic away from exit().
+
+Upstream-Status: Pending [https://gist.github.com/heatd/033e2dd6871a377713bb60c239b2d8b9]
+Signed-off-by: Pedro Falcato <pedro.falcato@gmail.com>
+---
+ src/exit/exit.c    | 4 +++-
+ src/unistd/pause.c | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/exit/exit.c b/src/exit/exit.c
+index ca11b9ad..18ec3fd0 100644
+--- a/src/exit/exit.c
++++ b/src/exit/exit.c
+@@ -15,6 +15,8 @@ weak_alias(dummy, __funcs_on_exit);
+ weak_alias(dummy, __stdio_exit);
+ weak_alias(dummy, _fini);
+ 
++extern int __libc_pause(void);
++
+ extern weak hidden void (*const __fini_array_start)(void), (*const __fini_array_end)(void);
+ 
+ static void libc_exit_fini(void)
+@@ -38,7 +40,7 @@ _Noreturn void exit(int code)
+ 	int tid =  __pthread_self()->tid;
+ 	int prev = a_cas(exit_lock, 0, tid);
+ 	if (prev == tid) a_crash();
+-	else if (prev) for (;;) __syscall(SYS_pause);
++	else if (prev) for (;;) __libc_pause();
+ 
+ 	__funcs_on_exit();
+ 	__libc_exit_fini();
+diff --git a/src/unistd/pause.c b/src/unistd/pause.c
+index 90bbf4ca..7ed5d578 100644
+--- a/src/unistd/pause.c
++++ b/src/unistd/pause.c
+@@ -1,7 +1,7 @@
+ #include <unistd.h>
+ #include "syscall.h"
+ 
+-int pause(void)
++int __libc_pause(void)
+ {
+ #ifdef SYS_pause
+ 	return syscall_cp(SYS_pause);
+@@ -9,3 +9,5 @@ int pause(void)
+ 	return syscall_cp(SYS_ppoll, 0, 0, 0, 0);
+ #endif
+ }
++
++weak_alias(__libc_pause, pause);
