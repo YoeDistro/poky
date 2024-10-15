@@ -135,6 +135,9 @@ PTESTS_PROBLEMS:append:riscv64 = " valgrind python3"
 PTESTS_SLOW:remove:riscv32 = "lttng-tools strace valgrind"
 PTESTS_PROBLEMS:append:riscv32 = " lttng-tools strace valgrind"
 PTESTS_SLOW:append:libc-musl = " libc-test"
+# strace hangs on qemux86-64/musl
+PTESTS_SLOW:remove:libc-musl = "strace"
+PTESTS_PROBLEMS:append:libc-musl = " strace"
 PTESTS_SLOW:remove:x86 = "valgrind"
 PTESTS_PROBLEMS:append:x86 = " valgrind"
 
