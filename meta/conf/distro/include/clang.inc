@@ -120,7 +120,7 @@ def clang_base_deps(d):
             if (d.getVar('TC_CXX_RUNTIME').find('android') != -1):
                 ret += " ${MLPREFIX}libcxx"
             else:
-                ret += " virtual/${TARGET_PREFIX}compilerlibs ${MLPREFIX}compiler-rt ${MLPREFIX}libcxx"
+                ret += " virtual/${MLPREFIX}compilerlibs ${MLPREFIX}compiler-rt ${MLPREFIX}libcxx"
     return ret
 
 BASE_DEFAULT_DEPS:append:class-target:toolchain-clang:class-target = " ${@clang_base_deps(d)}"
