@@ -1,7 +1,11 @@
 # Copyright (C) 2015 Khem Raj <raj.khem@gmail.com>
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "LLVM based C/C++ compiler Runtime"
+SUMMARY = "LLVM based C/C++ compiler Runtime"
+DESCRIPTIOM = "Simple builtin library that provides an \
+				implementation of the low-level target-specific \
+				hooks required by code generation and other runtime \
+				components"
 HOMEPAGE = "http://compiler-rt.llvm.org/"
 SECTION = "base"
 

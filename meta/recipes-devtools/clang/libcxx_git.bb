@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Khem Raj <raj.khem@gmail.com>
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "libc++ is a new implementation of the C++ standard library, targeting C++11"
+SUMMARY = "libc++ is a new implementation of the C++ standard library, targeting C++11 and above"
 HOMEPAGE = "http://libcxx.llvm.org/"
 SECTION = "base"
 
