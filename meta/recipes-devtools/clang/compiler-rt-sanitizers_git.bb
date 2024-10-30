@@ -1,7 +1,9 @@
 # Copyright (C) 2021 Khem Raj <raj.khem@gmail.com>
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "LLVM based C/C++ compiler Runtime"
+SUMMARY = "LLVM based C/C++ compiler Sanitizers Runtime"
+DESCRIPTION = "Runtime libraries that are required \
+				to run the code with sanitizer instrumentation"
 HOMEPAGE = "http://compiler-rt.llvm.org/"
 SECTION = "base"
 
