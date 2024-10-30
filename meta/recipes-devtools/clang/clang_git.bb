@@ -1,7 +1,16 @@
 # Copyright (C) 2014 Khem Raj <raj.khem@gmail.com>
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "LLVM based C/C++ compiler"
+SUMMARY = "LLVM based C/C++ compiler"
+DESCRIPTION = "Clang is an LLVM based C/C++/Objective-C compiler, \
+                which aims to deliver amazingly fast compiles, \
+                extremely useful error and warning messages and \
+                to provide a platform for building great source \
+                level tools. The Clang Static Analyzer and \
+                clang-tidy are tools that automatically find bugs \
+                in your code, and are great examples of the sort \
+                of tools that can be built using the Clang frontend \
+                as a library to parse C/C++ code"
 HOMEPAGE = "http://clang.llvm.org/"
 SECTION = "devel"
 
