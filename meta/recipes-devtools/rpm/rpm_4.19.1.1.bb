@@ -49,6 +49,10 @@ S = "${WORKDIR}/git"
 DEPENDS = "lua libgcrypt file popt xz bzip2 elfutils python3 sqlite3 zstd"
 DEPENDS:append:class-native = " file-replacement-native bzip2-replacement-native"
 
+# clang needs libomp which ends up with buildpaths in binaries debug info
+# see https://github.com/llvm/llvm-project/issues/82541
+TOOLCHAIN = "gcc"
+
 EXTRA_OECMAKE:append = " -D__CURL:FILEPATH=curl"
 EXTRA_OECMAKE:append:libc-musl = " -DENABLE_NLS=OFF -DENABLE_OPENMP=OFF"
 
