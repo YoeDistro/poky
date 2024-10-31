@@ -32,7 +32,6 @@ SRC_URI = "\
     file://0011-clang-Add-lpthread-and-ldl-along-with-lunwind-for-st.patch \
     file://0012-Pass-PYTHON_EXECUTABLE-when-cross-compiling-for-nati.patch \
     file://0013-Check-for-atomic-double-intrinsics.patch \
-    file://0014-libcxx-Add-compiler-runtime-library-to-link-step-for.patch \
     file://0015-cmake-Fix-configure-for-packages-using-find_package.patch \
     file://0016-clang-Fix-resource-dir-location-for-cross-toolchains.patch \
     file://0017-clang-driver-Add-dyld-prefix-when-checking-sysroot-f.patch \
