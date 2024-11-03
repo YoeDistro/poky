@@ -30,6 +30,7 @@ RDEPENDS:packagegroup-core-sdk = "\
     tcl \
     ${@bb.utils.contains('TARGET_TOOLCHAIN_LANGS', 'go', 'packagegroup-go-sdk-target', '', d)} \
     ${@bb.utils.contains('TARGET_TOOLCHAIN_LANGS', 'rust', 'packagegroup-rust-sdk-target', '', d)} \
+    ${@bb.utils.contains('TARGET_TOOLCHAIN_LANGS', 'clang', 'packagegroup-clang-sdk-target', '', d)} \
 "
 
 SANITIZERS = "libasan-dev libubsan-dev"
