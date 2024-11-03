@@ -29,3 +29,8 @@ RDEPENDS:packagegroup-core-buildessential = "\
     pkgconfig \
     "
 
+RDEPENDS:packagegroup-core-buildessential:append:toolchain-clang = "\
+    clang \
+    libcxx \
+    compiler-rt \
+    "
