@@ -7797,7 +7797,7 @@ system and gives an overview of their function and contents.
 
    :term:`SDK_TOOLCHAIN_LANGS`
       Specifies programming languages to support in the SDK, as a
-      space-separated list. Currently supported items are ``rust`` and ``go``.
+      space-separated list. Currently supported items are ``clang``, ``rust`` and ``go``.
 
    :term:`SDK_UPDATE_URL`
       An optional URL for an update server for the extensible SDK. If set,
