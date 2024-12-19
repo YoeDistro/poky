@@ -1,0 +1,59 @@
+From b85c7b406f017589eb959cd619ba442837ada470 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Fri, 4 Apr 2025 00:29:22 -0700
+Subject: [PATCH] Fix cargo build on riscv32
+
+riscv32 support is added to latest rustix already
+therefore this patch is limited to rustix-0.38.19
+once cargo/rust moves beyond rustix-0.38.19 as dependency
+we can remove this patch
+
+Upstream-Status: Inappropriate [Specific to rustix-0.38.19]
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ src/fs/ioctl.rs | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/src/fs/ioctl.rs b/src/fs/ioctl.rs
+index 718a2a4..794ab89 100644
+--- a/src/fs/ioctl.rs
++++ b/src/fs/ioctl.rs
+@@ -10,6 +10,9 @@ use {
+ };
+ 
+ use bitflags::bitflags;
++use linux_raw_sys::ioctl::FICLONE;
++use linux_raw_sys::ioctl::FS_IOC32_GETFLAGS;
++use linux_raw_sys::ioctl::FS_IOC32_SETFLAGS;
+ 
+ #[cfg(all(linux_kernel, not(any(target_arch = "sparc", target_arch = "sparc64"))))]
+ use crate::fd::{AsRawFd, BorrowedFd};
+@@ -79,7 +82,7 @@ unsafe impl ioctl::Ioctl for Ficlone<'_> {
+     type Output = ();
+ 
+     const IS_MUTATING: bool = false;
+-    const OPCODE: ioctl::Opcode = ioctl::Opcode::old(c::FICLONE as ioctl::RawOpcode);
++    const OPCODE: ioctl::Opcode = ioctl::Opcode::old(FICLONE as ioctl::RawOpcode);
+ 
+     fn as_ptr(&mut self) -> *mut c::c_void {
+         self.0.as_raw_fd() as *mut c::c_void
+@@ -139,7 +142,7 @@ bitflags! {
+ pub fn ioctl_getflags<Fd: AsFd>(fd: Fd) -> io::Result<IFlags> {
+     unsafe {
+         #[cfg(target_pointer_width = "32")]
+-        let ctl = ioctl::Getter::<ioctl::BadOpcode<{ c::FS_IOC32_GETFLAGS }>, u32>::new();
++        let ctl = ioctl::Getter::<ioctl::BadOpcode<{ FS_IOC32_GETFLAGS }>, u32>::new();
+         #[cfg(target_pointer_width = "64")]
+         let ctl = ioctl::Getter::<ioctl::BadOpcode<{ c::FS_IOC_GETFLAGS }>, u32>::new();
+ 
+@@ -156,8 +159,7 @@ pub fn ioctl_getflags<Fd: AsFd>(fd: Fd) -> io::Result<IFlags> {
+ pub fn ioctl_setflags<Fd: AsFd>(fd: Fd, flags: IFlags) -> io::Result<()> {
+     unsafe {
+         #[cfg(target_pointer_width = "32")]
+-        let ctl =
+-            ioctl::Setter::<ioctl::BadOpcode<{ c::FS_IOC32_SETFLAGS }>, u32>::new(flags.bits());
++        let ctl = ioctl::Setter::<ioctl::BadOpcode<{ FS_IOC32_SETFLAGS }>, u32>::new(flags.bits());
+ 
+         #[cfg(target_pointer_width = "64")]
+         let ctl = ioctl::Setter::<ioctl::BadOpcode<{ c::FS_IOC_SETFLAGS }>, u32>::new(flags.bits());
