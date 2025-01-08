@@ -28,7 +28,7 @@ INSANE_SKIP:${MLPREFIX}ldso:append = " dev-so libdir"
 FILES:${PN} = "${libc_baselibs} ${libexecdir}/* ${sysconfdir}/ld.so.conf"
 CONFFILES:${PN} = "${sysconfdir}/ld.so.conf"
 RRECOMMENDS:${PN} = "${@bb.utils.contains('DISTRO_FEATURES', 'ldconfig', '${MLPREFIX}ldconfig', '', d)}"
-FILES:ldconfig = "${base_sbindir}/ldconfig"
+FILES:ldconfig = "${base_sbindir}/${MLPREFIX}ldconfig"
 FILES:ldd = "${bindir}/ldd"
 FILES:ldso = "${bindir}/${MLPREFIX}ld.so"
 FILES:libmemusage = "${base_libdir}/libmemusage.so"
@@ -123,6 +123,7 @@ do_install() {
         ln -rs ${D}${base_libdir}/librt.so.1 ${D}${libdir}/librt.so
         if [ -n "${MLPREFIX}" ]; then
                 mv ${D}${bindir}/ld.so ${D}${bindir}/${MLPREFIX}ld.so
+                mv ${D}${base_sbindir}/ldconfig ${D}${base_sbindir}/${MLPREFIX}ldconfig
         fi
 }
 
