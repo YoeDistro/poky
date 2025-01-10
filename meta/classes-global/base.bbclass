@@ -48,7 +48,7 @@ def get_base_dep(d):
         return ""
     return "${BASE_DEFAULT_DEPS}"
 
-BASE_DEFAULT_DEPS = "virtual/${HOST_PREFIX}gcc virtual/${HOST_PREFIX}compilerlibs virtual/libc"
+BASE_DEFAULT_DEPS = "virtual/${HOST_PREFIX}cc virtual/${HOST_PREFIX}compilerlibs virtual/libc"
 
 BASEDEPENDS = ""
 BASEDEPENDS:class-target = "${@get_base_dep(d)}"
@@ -318,8 +318,8 @@ python base_eventhandler() {
     if isinstance(e, bb.event.RecipePreFinalise):
         if d.getVar("TARGET_PREFIX") == d.getVar("SDK_PREFIX"):
             d.delVar("PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}binutils")
-            d.delVar("PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc")
-            d.delVar("PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}g++")
+            d.delVar("PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}cc")
+            d.delVar("PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}c++")
             d.delVar("PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}compilerlibs")
 
     if isinstance(e, bb.event.RecipeParsed):

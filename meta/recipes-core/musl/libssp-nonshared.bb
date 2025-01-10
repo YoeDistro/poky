@@ -12,7 +12,7 @@ SRC_URI = "file://stack_chk.c"
 INHIBIT_DEFAULT_DEPS = "1"
 
 DEPENDS = "virtual/${TARGET_PREFIX}binutils \
-           virtual/${TARGET_PREFIX}gcc \
+           virtual/${TARGET_PREFIX}cc \
 "
 
 do_configure[noexec] = "1"
