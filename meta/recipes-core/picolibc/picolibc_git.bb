@@ -1,7 +1,7 @@
 require picolibc.inc
 
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "virtual/${TARGET_PREFIX}cc"
+DEPENDS = "virtual/${TARGET_PREFIX}gcc"
 
 PROVIDES += "virtual/libc virtual/libiconv virtual/libintl"
 
