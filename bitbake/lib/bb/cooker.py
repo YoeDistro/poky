@@ -101,24 +101,26 @@ class CookerFeatures(object):
 
 
 class EventWriter:
+    # 2 MBytes buffer for eventfile
+    _BUFFER_SIZE = 2 * 1024 * 1024
+
     def __init__(self, cooker, eventfile):
         self.cooker = cooker
-        self.eventfile = eventfile
-        self.event_queue = []
+        self._f = open(eventfile, "a", buffering=self._BUFFER_SIZE)
+
+    def __del__(self):
+        self._f.close()
 
     def write_variables(self):
-        with open(self.eventfile, "a") as f:
-            f.write("%s\n" % json.dumps({ "allvariables" : self.cooker.getAllKeysWithFlags(["doc", "func"])}))
+        self._f.write("%s\n" % json.dumps({ "allvariables" : self.cooker.getAllKeysWithFlags(["doc", "func"])}))
 
     def send(self, event):
-        with open(self.eventfile, "a") as f:
-            try:
-                str_event = codecs.encode(pickle.dumps(event), 'base64').decode('utf-8')
-                f.write("%s\n" % json.dumps({"class": event.__module__ + "." + event.__class__.__name__,
-                                             "vars": str_event}))
-            except Exception as err:
-                import traceback
-                print(err, traceback.format_exc())
+        try:
+            str_event = codecs.encode(pickle.dumps(event), 'base64').decode('utf-8')
+            self._f.write("%s\n" % json.dumps({"class": event.__module__ + "." + event.__class__.__name__, "vars": str_event}))
+        except Exception as err:
+            import traceback
+            print(err, traceback.format_exc())
 
 
 #============================================================================#
