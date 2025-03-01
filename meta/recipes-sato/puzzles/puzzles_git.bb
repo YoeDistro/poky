@@ -20,6 +20,8 @@ inherit cmake features_check pkgconfig
 
 DEPENDS += "gtk+3"
 
+CVE_PRODUCT = "simon:puzzles"
+
 do_install:append () {
     # net conflicts with Samba, so rename it
     mv ${D}${bindir}/net ${D}${bindir}/puzzles-net
