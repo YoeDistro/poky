@@ -4,6 +4,8 @@ require gcc-configure-common.inc
 
 INHIBIT_DEFAULT_DEPS = "1"
 
+#TOOLCHAIN = "gcc"
+
 do_configure () {
 	install -d ${D}${base_libdir} ${D}${libdir}
 	mkdir -p ${B}/${BPN}
