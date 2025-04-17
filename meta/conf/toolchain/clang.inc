@@ -7,7 +7,6 @@ CCLD:toolchain-clang = "${CCACHE}${HOST_PREFIX}clang ${HOST_CC_ARCH}${TOOLCHAIN_
 RANLIB:toolchain-clang = "${HOST_PREFIX}llvm-ranlib"
 AR:toolchain-clang = "${HOST_PREFIX}llvm-ar"
 AS:toolchain-clang = "${HOST_PREFIX}as ${HOST_AS_ARCH}"
-RANLIB:toolchain-clang = "${HOST_PREFIX}gcc-ranlib"
 STRIP:toolchain-clang = "${HOST_PREFIX}llvm-strip"
 OBJCOPY:toolchain-clang = "${HOST_PREFIX}llvm-objcopy"
 OBJDUMP:toolchain-clang = "${HOST_PREFIX}llvm-objdump"
