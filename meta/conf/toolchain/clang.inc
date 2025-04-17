@@ -23,3 +23,6 @@ PREFERRED_PROVIDER_virtual/cross-c++:toolchain-clang:class-nativesdk = "gcc-cros
 PREFERRED_PROVIDER_virtual/nativesdk-cross-cc:toolchain-clang = "gcc-crosssdk-${SDK_SYS}"
 PREFERRED_PROVIDER_virtual/nativesdk-cross-c++:toolchain-clang = "gcc-crosssdk-${SDK_SYS}"
 PREFERRED_PROVIDER_virtual/nativesdk-compilerlibs:toolchain-clang = "nativesdk-gcc-runtime"
+
+# Clang does not support this option
+DEBUG_PREFIX_MAP:remove:toolchain-clang = "-fcanon-prefix-map"
