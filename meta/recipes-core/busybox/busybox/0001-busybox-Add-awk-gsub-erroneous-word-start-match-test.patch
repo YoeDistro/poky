@@ -1,0 +1,29 @@
+From d820b91e4bd8fde08b19a6e9aabf9624ab28b4d0 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 11 May 2025 08:36:54 -0700
+Subject: [PATCH] busybox: Add awk gsub erroneous word start match test to know
+ fails on musl
+
+Musl does not implement this BSD extension REG_STARTEND and the test states
+that it will fail without this extention, therefore guard it with SKIP_KNOWN_BUGS
+so it can be ignored.
+
+Upstream-Status: Inappropriate [ Musl-specific ]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ testsuite/awk.tests | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/testsuite/awk.tests b/testsuite/awk.tests
+index be25f6696..a2deadccd 100755
+--- a/testsuite/awk.tests
++++ b/testsuite/awk.tests
+@@ -612,7 +612,7 @@ b
+ # Currently we use REG_STARTEND ("This flag is a BSD extension, not present in POSIX")
+ # to implement the code to handle this correctly, but if your libc has no REG_STARTEND,
+ # the alternative code mishandles this case.
+-testing 'awk gsub erroneous word start match' \
++test x"$SKIP_KNOWN_BUGS" = x"" && testing 'awk gsub erroneous word start match' \
+ 	"awk 'BEGIN { a=\"abc\"; gsub(/\<b*/,\"\",a); print a }'" \
+ 	'abc\n' \
+ 	'' ''
