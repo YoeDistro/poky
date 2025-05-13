@@ -108,6 +108,8 @@ PKG_CONFIG_SYSTEM_INCLUDE_PATH[unexport] = "1"
 
 # we dont want libc-*libc to kick in for native recipes
 LIBCOVERRIDE = ""
+TCOVERRIDE = ""
+TOOLCHAIN = ""
 CLASSOVERRIDE = "class-native"
 MACHINEOVERRIDES = ""
 MACHINE_FEATURES = ""

@@ -6,6 +6,7 @@
 
 BB_DEFAULT_TASK ?= "build"
 CLASSOVERRIDE ?= "class-target"
+TCOVERRIDE ?= "toolchain-gcc"
 
 inherit patch
 inherit staging
@@ -18,6 +19,10 @@ inherit logging
 PACKAGECONFIG_CONFARGS ??= ""
 
 inherit metadata_scm
+
+inherit gcc-native
+inherit gcc
+inherit_defer ${@oe.utils.ifelse(d.getVar('TOOLCHAIN') == 'clang', 'clang', '')}
 
 def lsb_distro_identifier(d):
     adjust = d.getVar('LSB_DISTRO_ADJUST')

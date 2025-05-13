@@ -13,6 +13,8 @@ STAGING_BINDIR_TOOLCHAIN = "${STAGING_DIR_NATIVE}${bindir_native}/${SDK_ARCH}${S
 # libc for the SDK can be different to that of the target
 NATIVESDKLIBC ?= "libc-glibc"
 LIBCOVERRIDE = ":${NATIVESDKLIBC}"
+TCOVERRIDE = ""
+TOOLCHAIN = ""
 CLASSOVERRIDE = "class-nativesdk"
 MACHINEOVERRIDES = ""
 
