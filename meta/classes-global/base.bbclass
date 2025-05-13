@@ -19,6 +19,10 @@ PACKAGECONFIG_CONFARGS ??= ""
 
 inherit metadata_scm
 
+inherit toolchain/gcc-native
+inherit toolchain/gcc
+inherit_defer ${@oe.utils.ifelse(d.getVar('TOOLCHAIN') == 'clang', 'toolchain/clang', '')}
+
 def lsb_distro_identifier(d):
     adjust = d.getVar('LSB_DISTRO_ADJUST')
     adjust_func = None
