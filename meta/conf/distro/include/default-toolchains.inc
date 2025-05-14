@@ -17,3 +17,7 @@ TOOLCHAIN:pn-libssp-nonshared = "gcc"
 #      vld1.s32 ${1:h}, [$3] '
 TOOLCHAIN:pn-pulseaudio:armv7ve = "gcc"
 TOOLCHAIN:pn-pulseaudio:armv7a = "gcc"
+
+# Clang results in a reproducibility issue
+# https://github.com/llvm/llvm-project/issues/82541
+TOOLCHAIN:pn-rpm = "gcc"
