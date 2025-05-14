@@ -12,3 +12,8 @@ TOOLCHAIN:pn-libgcc-initial = "gcc"
 TOOLCHAIN:pn-libgcc = "gcc"
 TOOLCHAIN:pn-libgfortran = "gcc"
 TOOLCHAIN:pn-libssp-nonshared = "gcc"
+
+# mix_neon.c:179:9: error: invalid operand in inline asm: 'vld1.s32 ${0:h}, [$2]
+#      vld1.s32 ${1:h}, [$3] '
+TOOLCHAIN:pn-pulseaudio:armv7ve = "gcc"
+TOOLCHAIN:pn-pulseaudio:armv7a = "gcc"
