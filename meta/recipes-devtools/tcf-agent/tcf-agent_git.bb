@@ -51,6 +51,11 @@ CFLAGS:append:riscv64 = " ${LCL_STOP_SERVICES}"
 CFLAGS:append:riscv32 = " ${LCL_STOP_SERVICES}"
 CFLAGS:append:loongarch64 = " ${LCL_STOP_SERVICES}"
 
+# This works with gcc-ranlib wrapper only which expands $@ shell array,
+# but it will fail if RANLIB was set to <cross>-ranlib or
+# <cross>-llvm-ranlib has same behaviour
+RANLIB:append:toolchain-clang = " $@"
+
 do_install() {
 	oe_runmake install INSTALLROOT=${D}
 	install -d ${D}${sysconfdir}/init.d/
