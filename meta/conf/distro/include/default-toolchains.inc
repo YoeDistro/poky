@@ -28,3 +28,6 @@ TOOLCHAIN:pn-pulseaudio:armv7a = "gcc"
 # Clang results in a reproducibility issue
 # https://github.com/llvm/llvm-project/issues/82541
 TOOLCHAIN:pn-rpm = "gcc"
+
+# Clang-20 issue - https://github.com/llvm/llvm-project/issues/132322
+TOOLCHAIN:pn-webkitgtk:arm = "gcc"
