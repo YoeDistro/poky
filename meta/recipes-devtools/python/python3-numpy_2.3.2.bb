@@ -26,6 +26,9 @@ PACKAGECONFIG[svml] = "-Ddisable-svml=false,-Ddisable-svml=true"
 # the overflow tests fail with compiler-rt on aarch64
 LDFLAGS:append:toolchain-clang:aarch64 = " -rtlib=libgcc -unwindlib=libgcc"
 
+TOOLCHAIN_OPTIONS:append:toolchain-clang:riscv64 = " -march=rv64gcv"
+TOOLCHAIN_OPTIONS:append:toolchain-clang:riscv32 = " -march=rv32gcv"
+
 # Remove references to buildpaths from numpy's __config__.py
 do_install:append() {
     sed -i \
