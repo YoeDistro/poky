@@ -23,6 +23,9 @@ S = "${WORKDIR}/numpy-${PV}"
 
 PACKAGECONFIG[svml] = "-Ddisable-svml=false,-Ddisable-svml=true"
 
+TOOLCHAIN_OPTIONS:append:toolchain-clang:riscv64 = " -march=rv64gcv"
+TOOLCHAIN_OPTIONS:append:toolchain-clang:riscv32 = " -march=rv32gcv"
+
 # Remove references to buildpaths from numpy's __config__.py
 do_install:append() {
     sed -i \
