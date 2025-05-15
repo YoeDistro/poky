@@ -33,5 +33,13 @@ TOOLCHAIN:pn-rpm = "gcc"
 # They must be looked into before disabling
 TOOLCHAIN:pn-systemtap = "gcc"
 
+# Valgrind needs intrinsics which are not provided by clang
+# m_signals.c:2213:7: error: __builtin_longjmp is not supported for the current target
+# 2213 |       VG_MINIMAL_LONGJMP(tst->sched_jmpbuf);
+#      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# It needs something like - https://bugs.kde.org/show_bug.cgi?id=369723
+TOOLCHAIN:pn-valgrind:riscv64 = "gcc"
+
 # Clang-20 issue - https://github.com/llvm/llvm-project/issues/132322
 TOOLCHAIN:pn-webkitgtk:arm = "gcc"
