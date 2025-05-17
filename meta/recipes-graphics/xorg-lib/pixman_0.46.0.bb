@@ -6,6 +6,7 @@ including trapezoids, triangles, and rectangles."
 HOMEPAGE = "http://www.pixman.org"
 SECTION = "x11/libs"
 DEPENDS = "zlib"
+DEPENDS:append:toolchain-clang:mipsarch = " openmp"
 
 SRC_URI = "https://www.cairographics.org/releases/${BP}.tar.gz"
 SRC_URI[sha256sum] = "02d9ff7b8458ef61731c3d355f854bbf461fd0a4d3563c51f1c1c7b00638050d"
@@ -37,6 +38,8 @@ EXTRA_OEMESON:append:armv7a = "${@bb.utils.contains("TUNE_FEATURES","neon",""," 
 EXTRA_OEMESON:append:armv7ve = "${@bb.utils.contains("TUNE_FEATURES","neon",""," -Dneon=disabled",d)}"
 
 EXTRA_OEMESON:append:class-native = " -Dopenmp=disabled"
+
+CFLAGS:append:toolchain-clang:mipsarch = " -fno-integrated-as"
 
 BBCLASSEXTEND = "native nativesdk"
 
