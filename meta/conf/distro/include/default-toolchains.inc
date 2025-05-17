@@ -29,6 +29,11 @@ TOOLCHAIN:pn-pulseaudio:armv7a = "gcc"
 # https://github.com/llvm/llvm-project/issues/82541
 TOOLCHAIN:pn-rpm = "gcc"
 
+# com32/lib/../include/stdarg.h:9:15: fatal error: 'stdarg.h' file not found
+#    9 | #include_next <stdarg.h>
+#      |               ^~~~~~~~~~
+TOOLCHAIN:pn-syslinux = "gcc"
+
 # Emits lot of warning which are treated as errors
 # They must be looked into before disabling
 TOOLCHAIN:pn-systemtap = "gcc"
