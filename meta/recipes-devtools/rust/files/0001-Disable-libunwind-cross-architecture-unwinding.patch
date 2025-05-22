@@ -1,0 +1,31 @@
+From ecc0a33b49d46a657ddf2ecd2c6ebb0b95eead45 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Wed, 21 May 2025 18:47:09 -0700
+Subject: [PATCH] Disable libunwind cross-architecture unwinding
+
+Building with _LIBUNWIND_IS_NATIVE_ONLY disables code for cross-architecture unwinding
+It also enables some additional code that handles PAC-specific unwind info
+it helps compiling with the -mbranch-protection=pac or -mbranch-protection=standard flags
+
+This fixes build with clang/musl on aarch64
+
+Upstream-Status: Submitted [https://github.com/rust-lang/rust/pull/141375]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ src/bootstrap/src/core/build_steps/llvm.rs | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/bootstrap/src/core/build_steps/llvm.rs b/src/bootstrap/src/core/build_steps/llvm.rs
+index a3788197471..b45e6a9b2f9 100644
+--- a/src/bootstrap/src/core/build_steps/llvm.rs
++++ b/src/bootstrap/src/core/build_steps/llvm.rs
+@@ -1454,6 +1454,9 @@ fn run(self, builder: &Builder<'_>) -> Self::Output {
+                 cfg.define("_LIBUNWIND_HIDE_SYMBOLS", "1");
+                 cfg.define("_LIBUNWIND_IS_NATIVE_ONLY", "1");
+             }
++            if self.target.starts_with("aarch64") && self.target.contains("musl") {
++                cfg.define("_LIBUNWIND_IS_NATIVE_ONLY", "1");
++            }
+         }
+ 
+         cc_cfg.compiler(builder.cc(self.target));
