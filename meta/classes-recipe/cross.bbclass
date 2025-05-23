@@ -11,6 +11,7 @@ inherit relocatable
 EXCLUDE_FROM_WORLD = "1"
 
 TOOLCHAIN = ""
+TCOVERRIDE = ""
 CLASSOVERRIDE = "class-cross"
 PACKAGES = ""
 PACKAGES_DYNAMIC = ""
