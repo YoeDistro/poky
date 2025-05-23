@@ -7,6 +7,7 @@
 inherit cross
 
 CLASSOVERRIDE = "class-crosssdk"
+TCOVERRIDE = ""
 TOOLCHAIN = ""
 NATIVESDKLIBC ?= "libc-glibc"
 LIBCOVERRIDE = ":${NATIVESDKLIBC}"

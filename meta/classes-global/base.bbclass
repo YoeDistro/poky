@@ -6,6 +6,7 @@
 
 BB_DEFAULT_TASK ?= "build"
 CLASSOVERRIDE ?= "class-target"
+TCOVERRIDE ?= "toolchain-gcc"
 
 inherit patch
 inherit staging
