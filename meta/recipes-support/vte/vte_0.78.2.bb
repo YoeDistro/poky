@@ -26,6 +26,10 @@ SRC_URI[archive.sha256sum] = "35d7bcde07356846b4a12881c8e016705b70a9004a9082285e
 
 ANY_OF_DISTRO_FEATURES = "${GTK3DISTROFEATURES}"
 
+# qemu usermode crashes when using clang as system compiler but works with gcc
+# see https://patchwork.yoctoproject.org/project/oe-core/patch/20240923234336.3978188-1-raj.khem@gmail.com/
+GI_DATA_ENABLED:toolchain-clang:armv7ve = "False"
+
 EXTRA_OEMESON += "${@bb.utils.contains('GI_DATA_ENABLED', 'True', '-Dvapi=true', '-Dvapi=false', d)}"
 EXTRA_OEMESON:append = " ${@bb.utils.contains('GI_DATA_ENABLED', 'False', '-Ddocs=false', '', d)}"
 
