@@ -2171,9 +2171,6 @@ class CookerParser(object):
             self.parser_quit = multiprocessing.Event()
             self.result_queue = multiprocessing.Queue()
 
-            for jobid in range(len(self.willparse)):
-                self.toparse_queue.put(jobid)
-
             # Have to pass in willparse at fork time so all parsing processes have the unpickleable data
             # then access it by index from the parse queue.
             for i in range(0, self.num_processes):
@@ -2182,6 +2179,8 @@ class CookerParser(object):
                 self.process_names.append(parser.name)
                 self.processes.append(parser)
 
+            for jobid in range(len(self.willparse)):
+                self.toparse_queue.put(jobid)
             self.toparse_queue.close()
 
             self.results = itertools.chain(self.results, self.parse_generator())
