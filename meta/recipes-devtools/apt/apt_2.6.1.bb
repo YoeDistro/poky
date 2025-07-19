@@ -56,6 +56,9 @@ EXTRA_OECMAKE:append = " -DCURRENT_VENDOR=debian -DWITH_DOC=False \
     -DWITH_TESTS=False \
 "
 
+# See https://github.com/llvm/llvm-project/issues/63743
+CXXFLAGS:append:toolchain-clang = " -stdlib=libstdc++"
+
 do_configure:prepend() {
 	echo "set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH )" >>  ${WORKDIR}/toolchain.cmake
 }
