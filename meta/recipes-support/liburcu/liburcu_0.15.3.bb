@@ -19,6 +19,7 @@ S = "${UNPACKDIR}/userspace-rcu-${PV}"
 inherit autotools multilib_header
 
 CPPFLAGS:append:riscv64  = " -pthread -D_REENTRANT"
+CPPFLAGS:append:toolchain-clang = " -Wno-missing-noreturn"
 
 do_install:append() {
     oe_multilib_header urcu/config.h
