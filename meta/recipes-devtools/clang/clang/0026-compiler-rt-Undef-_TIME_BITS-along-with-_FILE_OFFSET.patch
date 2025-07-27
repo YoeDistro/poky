@@ -1,4 +1,4 @@
-From 6b6a518bc7686af7680f45fcdea7c414a22a2f53 Mon Sep 17 00:00:00 2001
+From 8e67a657cd2ff6f31794d5d481759dddc8534bc7 Mon Sep 17 00:00:00 2001
 From: Khem Raj <raj.khem@gmail.com>
 Date: Tue, 21 Feb 2023 12:46:10 -0800
 Subject: [PATCH] compiler-rt: Undef _TIME_BITS along with _FILE_OFFSET_BITS in
@@ -22,10 +22,10 @@ Signed-off-by: Khem Raj <raj.khem@gmail.com>
  1 file changed, 9 insertions(+)
 
 diff --git a/compiler-rt/lib/sanitizer_common/sanitizer_platform.h b/compiler-rt/lib/sanitizer_common/sanitizer_platform.h
-index 57966403c92a..efa83f30eca0 100644
+index 196c0a988478..842650e392ca 100644
 --- a/compiler-rt/lib/sanitizer_common/sanitizer_platform.h
 +++ b/compiler-rt/lib/sanitizer_common/sanitizer_platform.h
-@@ -22,6 +22,15 @@
+@@ -23,6 +23,15 @@
  // function declarations into a .S file which doesn't compile.
  // https://crbug.com/1162741
  #if __has_include(<features.h>) && !defined(__ANDROID__)

@@ -1,4 +1,4 @@
-From 9f88f2e4efa56e53c78f9b67775c71afa711a69c Mon Sep 17 00:00:00 2001
+From 2b2aae93643b52e20f4c04fe8a4fc72427094b26 Mon Sep 17 00:00:00 2001
 From: Khem Raj <raj.khem@gmail.com>
 Date: Thu, 22 May 2025 21:50:45 -0700
 Subject: [PATCH] [compiler-rt] Hardcode uptr/sptr typedefs on Mips/Linux

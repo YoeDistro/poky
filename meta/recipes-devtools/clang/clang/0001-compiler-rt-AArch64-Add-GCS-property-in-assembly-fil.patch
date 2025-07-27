@@ -1,4 +1,4 @@
-From 2d102880766a5e55e5d7b4f9a2fb106d7d1ee55c Mon Sep 17 00:00:00 2001
+From a812a97183d5875e70c72cf078ca1516cce38f68 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Csan=C3=A1d=20Hajd=C3=BA?= <csanad.hajdu@arm.com>
 Date: Thu, 7 Aug 2025 16:40:36 +0200
 Subject: [PATCH] [compiler-rt][AArch64] Add GCS property in assembly files
@@ -22,7 +22,7 @@ Signed-off-by: Khem Raj <raj.khem@gmail.com>
  8 files changed, 22 insertions(+), 14 deletions(-)
 
 diff --git a/compiler-rt/lib/builtins/aarch64/lse.S b/compiler-rt/lib/builtins/aarch64/lse.S
-index 1fe18f4a4681..abad047096cc 100644
+index d7c1db7243ef..a444d82892c3 100644
 --- a/compiler-rt/lib/builtins/aarch64/lse.S
 +++ b/compiler-rt/lib/builtins/aarch64/lse.S
 @@ -264,7 +264,7 @@ END_COMPILERRT_OUTLINE_FUNCTION(NAME(LDNM))
@@ -34,9 +34,9 @@ index 1fe18f4a4681..abad047096cc 100644
 +// GNU property note for BTI, PAC, and GCS
 +GNU_PROPERTY_BTI_PAC_GCS
  
- #endif // __aarch64__
+ #endif // defined(__aarch64__) || defined(__arm64ec__)
 diff --git a/compiler-rt/lib/builtins/aarch64/sme-abi.S b/compiler-rt/lib/builtins/aarch64/sme-abi.S
-index 8dbbe061edb9..29d7ad53047d 100644
+index 7c47336cfc57..d5510ac0cfa5 100644
 --- a/compiler-rt/lib/builtins/aarch64/sme-abi.S
 +++ b/compiler-rt/lib/builtins/aarch64/sme-abi.S
 @@ -371,5 +371,5 @@ END_COMPILERRT_FUNCTION(__arm_sme_restore)
@@ -48,7 +48,7 @@ index 8dbbe061edb9..29d7ad53047d 100644
 +// GNU property note for BTI, PAC, and GCS
 +GNU_PROPERTY_BTI_PAC_GCS
 diff --git a/compiler-rt/lib/builtins/assembly.h b/compiler-rt/lib/builtins/assembly.h
-index 34c71241524d..a554c10c18ac 100644
+index 89372f18c84b..d7db7d818945 100644
 --- a/compiler-rt/lib/builtins/assembly.h
 +++ b/compiler-rt/lib/builtins/assembly.h
 @@ -79,11 +79,12 @@
