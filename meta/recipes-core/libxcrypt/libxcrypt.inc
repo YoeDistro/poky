@@ -24,3 +24,5 @@ API = "--disable-obsolete-api"
 EXTRA_OECONF += "${API}"
 
 BBCLASSEXTEND = "native nativesdk"
+
+LDFLAGS:append:toolchain-clang = "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-lld', ' -Wl,--undefined-version', '', d)}"
