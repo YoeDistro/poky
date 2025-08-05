@@ -3,7 +3,7 @@ DEFAULTTUNE ?= "octeontx2"
 TUNEVALID[octeontx2] = "Enable Marvell octeontx2 specific processor optimizations"
 CPU_TUNE_OCTEONTX2 ?= "-mcpu=octeontx2"
 CPU_TUNE_OCTEONTX2:toolchain-clang = "-march=armv8.2-a"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'octeontx2', ' ${CPU_TUNE_OCTEONTX2}', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'octeontx2', ' ${CPU_TUNE_OCTEONTX2}', '', d)}"
 
 require conf/machine/include/arm/arch-armv8-2a.inc
 

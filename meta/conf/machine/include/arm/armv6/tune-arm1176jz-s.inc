@@ -3,7 +3,7 @@ DEFAULTTUNE ?= "arm1176jzs"
 require conf/machine/include/arm/arch-armv6.inc
 
 TUNEVALID[arm1176jzs] = "Enable arm1176jzs specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'arm1176jzs', ' -mcpu=arm1176jz-s', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'arm1176jzs', ' -mcpu=arm1176jz-s', '', d)}"
 MACHINEOVERRIDES =. "${@bb.utils.contains('TUNE_FEATURES', 'arm1176jzs', 'armv6:', '', d)}"
 
 AVAILTUNES += "arm1176jzs"

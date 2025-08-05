@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexr4f"
 
 TUNEVALID[cortexr4f] = "Enable Cortex-R4F specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexr4f', ' -mcpu=cortex-r4f', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexr4f', ' -mcpu=cortex-r4f', '', d)}"
 
 require conf/machine/include/arm/arch-armv7r.inc
 

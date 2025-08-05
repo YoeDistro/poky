@@ -6,7 +6,7 @@ MACHINEOVERRIDES =. "${@bb.utils.contains("TUNE_FEATURES", "cortexa73-cortexa53"
 CPU_TUNE_ARG = "cortex-a73.cortex-a53"
 # clang doesn't support big.LITTLE tunes, select the LITTLE tune
 CPU_TUNE_ARG:toolchain-clang = "cortex-a53"
-TUNE_CCARGS .= "${@bb.utils.contains("TUNE_FEATURES", "cortexa73-cortexa53", " -mcpu=${CPU_TUNE_ARG}", "", d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains("TUNE_FEATURES", "cortexa73-cortexa53", " -mcpu=${CPU_TUNE_ARG}", "", d)}"
 
 require conf/machine/include/arm/arch-armv8a.inc
 

@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexm55"
 
 TUNEVALID[cortexm55] = "Enable Cortex-M55 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexm55', ' -mcpu=cortex-m55', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexm55', ' -mcpu=cortex-m55', '', d)}"
 
 require conf/machine/include/arm/arch-armv8-1m-main.inc
 

@@ -2,7 +2,7 @@ DEFAULTTUNE ?= "cortexm0-plus"
 require conf/machine/include/arm/arch-armv6m.inc
 
 TUNEVALID[cortexm0-plus] = "Enable Cortex-M0 Plus specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexm0-plus', ' -mcpu=cortex-m0plus', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexm0-plus', ' -mcpu=cortex-m0plus', '', d)}"
 AVAILTUNES += "cortexm0-plus"
 
 ARMPKGARCH:tune-cortexm0-plus = "cortexm0-plus"

@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexx1"
 
 TUNEVALID[cortexx1] = "Enable cortex-x1 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexx1', ' -mcpu=cortex-x1', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexx1', ' -mcpu=cortex-x1', '', d)}"
 
 require conf/machine/include/arm/arch-armv8-2a.inc
 

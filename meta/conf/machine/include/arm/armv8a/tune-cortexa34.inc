@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexa34"
 
 TUNEVALID[cortexa34] = "Enable Cortex-A34 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa34', ' -mcpu=cortex-a34', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa34', ' -mcpu=cortex-a34', '', d)}"
 
 require conf/machine/include/arm/arch-armv8a.inc
 

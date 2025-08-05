@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexa75"
 
 TUNEVALID[cortexa75] = "Enable Cortex-A75 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa75', ' -mcpu=cortex-a75', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa75', ' -mcpu=cortex-a75', '', d)}"
 
 require conf/machine/include/arm/arch-armv8-2a.inc
 

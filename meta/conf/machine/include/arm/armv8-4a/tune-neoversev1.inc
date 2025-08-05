@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "neoversev1"
 
 TUNEVALID[neoversev1] = "Enable neoverse-v1 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'neoversev1', ' -mcpu=neoverse-v1', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'neoversev1', ' -mcpu=neoverse-v1', '', d)}"
 
 require conf/machine/include/arm/arch-armv8-4a.inc
 

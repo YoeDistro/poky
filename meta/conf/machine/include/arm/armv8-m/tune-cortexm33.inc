@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexm33"
 
 TUNEVALID[cortexm33] = "Enable Cortex-M33 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexm33', ' -mcpu=cortex-m33', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexm33', ' -mcpu=cortex-m33', '', d)}"
 
 require conf/machine/include/arm/arch-armv8m-main.inc
 

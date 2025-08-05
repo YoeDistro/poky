@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexx3"
 
 TUNEVALID[cortexx3] = "Enable cortex-x3 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexx3', ' -mcpu=cortex-x3', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexx3', ' -mcpu=cortex-x3', '', d)}"
 
 require conf/machine/include/arm/arch-armv9a.inc
 

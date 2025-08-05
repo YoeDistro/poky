@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexa710"
 
 TUNEVALID[cortexa710] = "Enable cortex-a710 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa710', ' -mcpu=cortex-a710', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa710', ' -mcpu=cortex-a710', '', d)}"
 
 require conf/machine/include/arm/arch-armv9a.inc
 

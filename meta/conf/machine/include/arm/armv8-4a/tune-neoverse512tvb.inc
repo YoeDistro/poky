@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "neoverse512tvb"
 
 TUNEVALID[neoverse512tvb] = "Enable neoverse-512tvb specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'neoverse512tvb', ' -mcpu=neoverse-512tvb', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'neoverse512tvb', ' -mcpu=neoverse-512tvb', '', d)}"
 
 require conf/machine/include/arm/arch-armv8-4a.inc
 

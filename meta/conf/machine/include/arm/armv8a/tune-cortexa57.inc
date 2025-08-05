@@ -1,8 +1,7 @@
 DEFAULTTUNE ?= "cortexa57"
 
 TUNEVALID[cortexa57] = "Enable Cortex-A57 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa57', ' -mcpu=cortex-a57', '', d)}"
-
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa57', ' -mcpu=cortex-a57', '', d)}"
 require conf/machine/include/arm/arch-armv8a.inc
 
 # Little Endian base configs

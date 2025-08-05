@@ -4,7 +4,7 @@
 DEFAULTTUNE ?= "cortexr52"
 
 TUNEVALID[cortexr52] = "Enable Cortex-R52 specific processor optimizations"
-TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexr52', ' -mcpu=cortex-r52', '', d)}"
+TUNE_CCARGS_MARCH .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexr52', ' -mcpu=cortex-r52', '', d)}"
 
 require conf/machine/include/arm/arch-armv8r.inc
 
