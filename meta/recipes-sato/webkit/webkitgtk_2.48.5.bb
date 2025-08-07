@@ -19,6 +19,9 @@ SRC_URI = "https://www.webkitgtk.org/releases/${BPN}-${PV}.tar.xz \
            file://0001-Fix-build-errors-on-RISCV-https-bugs.webkit.org-show.patch \
            file://fix-ftbfs-riscv64.patch \
            "
+SRC_URI:append:arm = "file://0001-Revert-Cherry-pick-289651.534-safari-7621-branch-a8d.patch"
+SRC_URI:append:armeb = "file://0001-Revert-Cherry-pick-289651.534-safari-7621-branch-a8d.patch"
+
 SRC_URI[sha256sum] = "bb64ed9d1cfd58e8b5e89ccad71dd31adfed56336bad7695031ad0b668e1987c"
 
 inherit cmake pkgconfig gobject-introspection perlnative features_check upstream-version-is-even gi-docgen
