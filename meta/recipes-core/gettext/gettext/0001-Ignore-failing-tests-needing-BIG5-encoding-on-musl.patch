@@ -1,0 +1,84 @@
+From a6e95c626cd52423ca3ff75d47bb2f08b29ad5c8 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Thu, 21 Aug 2025 13:24:47 -0700
+Subject: [PATCH] Ignore failing tests needing BIG5 encoding on musl
+
+This test fails on Linux with musl libc
+which does not support the BIG5 encoding in 'iconv'.
+
+Upstream-Status: Inappropriate [Musl-specific]
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ gettext-tools/tests/msgcat-22             | 2 ++
+ gettext-tools/tests/msgconv-2             | 2 ++
+ gettext-tools/tests/msgconv-8             | 2 ++
+ gettext-tools/tests/msgmerge-compendium-6 | 2 ++
+ gettext-tools/tests/xgettext-python-3     | 2 ++
+ 5 files changed, 10 insertions(+)
+
+diff --git a/gettext-tools/tests/msgcat-22 b/gettext-tools/tests/msgcat-22
+index 6047188..abe5877 100755
+--- a/gettext-tools/tests/msgcat-22
++++ b/gettext-tools/tests/msgcat-22
+@@ -6,6 +6,8 @@
+ # Note: This test fails on Linux with musl libc versions that don't support
+ # the GB18030 encoding in 'iconv'.
+ 
++exit 77
++
+ cat <<\EOF > mcat-test22.po
+ msgid ""
+ msgstr ""
+diff --git a/gettext-tools/tests/msgconv-2 b/gettext-tools/tests/msgconv-2
+index d286cda..b02e1be 100755
+--- a/gettext-tools/tests/msgconv-2
++++ b/gettext-tools/tests/msgconv-2
+@@ -7,6 +7,8 @@
+ # Note: This test fails on Linux with musl libc versions that don't support
+ # the BIG5 encoding in 'iconv'.
+ 
++exit 77
++
+ cat <<\EOF > mco-test2.po
+ # Chinese translation for GNU gettext messages.
+ #
+diff --git a/gettext-tools/tests/msgconv-8 b/gettext-tools/tests/msgconv-8
+index 207b0f0..618de0f 100755
+--- a/gettext-tools/tests/msgconv-8
++++ b/gettext-tools/tests/msgconv-8
+@@ -6,6 +6,8 @@
+ # Note: This test fails on Linux with musl libc versions that don't support
+ # the GB18030 encoding in 'iconv'.
+ 
++exit 77
++
+ cat <<\EOF > mco-test8.po
+ msgid ""
+ msgstr ""
+diff --git a/gettext-tools/tests/msgmerge-compendium-6 b/gettext-tools/tests/msgmerge-compendium-6
+index 59eb00e..d1d7f0d 100755
+--- a/gettext-tools/tests/msgmerge-compendium-6
++++ b/gettext-tools/tests/msgmerge-compendium-6
+@@ -10,6 +10,8 @@
+ # Note: This test fails on Linux with musl libc versions and on Solaris 11
+ # (OpenIndiana, OmniOS) that don't support the EUC-KR encoding in 'iconv'.
+ 
++exit 77
++
+ : ${MSGCONV=msgconv}
+ ${MSGCONV} --to-code=UTF-8 -o mm-ko.utf-8.pot "$wabs_srcdir"/mm-ko.ascii.pot
+ 
+diff --git a/gettext-tools/tests/xgettext-python-3 b/gettext-tools/tests/xgettext-python-3
+index 1e13b57..ee1ffee 100755
+--- a/gettext-tools/tests/xgettext-python-3
++++ b/gettext-tools/tests/xgettext-python-3
+@@ -6,6 +6,8 @@
+ # Note: This test fails on Linux with musl libc versions that don't support
+ # the EUC-JP encoding in 'iconv'.
+ 
++exit 77
++
+ cat <<\EOF > xg-py-3a.py
+ #!/usr/bin/env python
+ # TRANSLATORS: Franè´Æois Pinard is a hero.
