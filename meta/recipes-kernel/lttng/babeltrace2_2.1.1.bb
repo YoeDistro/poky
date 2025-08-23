@@ -30,6 +30,7 @@ PACKAGECONFIG[manpages] = ", --disable-man-pages, asciidoc-native xmlto-native"
 FILES:${PN}-staticdev += "${libdir}/babeltrace2/plugins/*.a"
 FILES:${PN} += "${libdir}/babeltrace2/plugins/*.so ${PYTHON_SITEPACKAGES_DIR}/*"
 
+CCACHE_DISABLE = "1"
 ASNEEDED = ""
 LDFLAGS += "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-lld ptest', '-fuse-ld=bfd ', '', d)}"
 
