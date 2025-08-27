@@ -40,9 +40,11 @@ SRCREV_machine:class-devupstream ?= "25bf10be219d37d2fb221c93816a913f5f735530"
 PN:class-devupstream = "linux-yocto-upstream"
 KBRANCH:class-devupstream = "v6.16/base"
 
+KERNEL_MODULE_AUTOLOAD += "drm_ttm_helper drm_vram_helper"
+
 SRC_URI = "git://git.yoctoproject.org/linux-yocto.git;name=machine;branch=${KBRANCH};protocol=https \
            git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;name=meta;branch=yocto-6.16;destsuffix=${KMETA};protocol=https"
-
+SRC_URI += "file://vbox.cfg"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 LINUX_VERSION ?= "6.16.2"
 
