@@ -143,13 +143,14 @@ class GitSM(Git):
 
         return submodules != []
 
-    def call_process_submodules(self, ud, d, extra_check, subfunc):
+    def call_process_submodules(self, ud, d, subfunc):
         # If we're using a shallow mirror tarball it needs to be
         # unpacked temporarily so that we can examine the .gitmodules file
         # Unpack even when ud.clonedir is not available,
         # which may occur during a fast shallow clone
-        unpack = extra_check or not os.path.exists(ud.clonedir)
-        if ud.shallow and os.path.exists(ud.fullshallow) and unpack:
+        if os.path.exists(ud.clonedir):
+            self.process_submodules(ud, ud.clonedir, subfunc, d)
+        elif ud.shallow and os.path.exists(ud.fullshallow):
             tmpdir = tempfile.mkdtemp(dir=d.getVar("DL_DIR"))
             try:
                 runfetchcmd("tar -xzf %s" % ud.fullshallow, d, workdir=tmpdir)
@@ -157,7 +158,7 @@ class GitSM(Git):
             finally:
                 shutil.rmtree(tmpdir)
         else:
-            self.process_submodules(ud, ud.clonedir, subfunc, d)
+            raise bb.fetch2.FetchError("Submodule source not available.")
 
     def need_update(self, ud, d):
         if Git.need_update(self, ud, d):
@@ -174,7 +175,7 @@ class GitSM(Git):
                 logger.error('gitsm: submodule update check failed: %s %s' % (type(e).__name__, str(e)))
                 need_update_result = True
 
-        self.call_process_submodules(ud, d, True, need_update_submodule)
+        self.call_process_submodules(ud, d, need_update_submodule)
 
         if need_update_list:
             logger.debug('gitsm: Submodules requiring update: %s' % (' '.join(need_update_list)))
@@ -195,7 +196,7 @@ class GitSM(Git):
                 raise
 
         Git.download(self, ud, d)
-        self.call_process_submodules(ud, d, self.need_update(ud, d), download_submodule)
+        self.call_process_submodules(ud, d, download_submodule)
 
     def unpack(self, ud, destdir, d):
         fulldestdir = self.destdir(ud, destdir, d)
@@ -247,7 +248,7 @@ class GitSM(Git):
             except Exception as e:
                 logger.warning('gitsm: submodule clean failed: %s %s' % (type(e).__name__, str(e)))
 
-        self.call_process_submodules(ud, d, True, clean_submodule)
+        self.call_process_submodules(ud, d, clean_submodule)
 
         # Clean top git dir
         Git.clean(self, ud, d)
@@ -260,6 +261,6 @@ class GitSM(Git):
             newfetch = Fetch([url], d, cache=False)
             urldata.extend(newfetch.expanded_urldata())
 
-        self.call_process_submodules(ud, d, ud.method.need_update(ud, d), add_submodule)
+        self.call_process_submodules(ud, d, add_submodule)
 
         return urldata
