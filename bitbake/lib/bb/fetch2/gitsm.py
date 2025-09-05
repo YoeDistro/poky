@@ -174,7 +174,7 @@ class GitSM(Git):
                 logger.error('gitsm: submodule update check failed: %s %s' % (type(e).__name__, str(e)))
                 need_update_result = True
 
-        self.call_process_submodules(ud, d, not os.path.exists(ud.clonedir), need_update_submodule)
+        self.call_process_submodules(ud, d, True, need_update_submodule)
 
         if need_update_list:
             logger.debug('gitsm: Submodules requiring update: %s' % (' '.join(need_update_list)))
