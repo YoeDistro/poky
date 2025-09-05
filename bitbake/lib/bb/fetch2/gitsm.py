@@ -125,6 +125,12 @@ class GitSM(Git):
             url += ";lfs=%s" % ("1" if self._need_lfs(ud) else "0")
             url += ";rev=%s" % subrevision[module]
             url += ";bareclone=1"
+
+            parentdir = self.destdir(ud, '', d)
+            gitdir = '' if ud.bareclone else '.git'
+            subdir = os.path.join(parentdir, gitdir, 'modules', module)
+            url += ";subdir=%s" % subdir
+
             # Note that adding "user=" here to give credentials to the
             # submodule is not supported. Since using SRC_URI to give git://
             # URL a password is not supported, one have to use one of the
@@ -194,15 +200,11 @@ class GitSM(Git):
         subdestdir = self.destdir(ud, destdir, d)
 
         def unpack_submodules(ud, url, module, modpath, workdir, d):
-            # Figure out where we clone over the bare submodules...
-            if ud.bareclone:
-                repo_conf = ''
-            else:
-                repo_conf = '.git'
-
             try:
                 newfetch = Fetch([url], d, cache=False)
-                newfetch.unpack(root=os.path.dirname(os.path.join(subdestdir, repo_conf, 'modules', module)))
+                new_ud = newfetch.ud[url]
+                fulldestdir = self.destdir(new_ud, destdir, d)
+                newfetch.unpack(root=destdir)
             except Exception as e:
                 logger.error('gitsm: submodule unpack failed: %s %s' % (type(e).__name__, str(e)))
                 raise
@@ -217,9 +219,9 @@ class GitSM(Git):
 
             # Ensure the submodule repository is NOT set to bare, since we're checking it out...
             try:
-                runfetchcmd("%s config core.bare false" % (ud.basecmd), d, quiet=True, workdir=os.path.join(subdestdir, repo_conf, 'modules', module))
+                runfetchcmd("%s config core.bare false" % (ud.basecmd), d, quiet=True, workdir=fulldestdir)
             except:
-                logger.error("Unable to set git config core.bare to false for %s" % os.path.join(subdestdir, repo_conf, 'modules', module))
+                logger.error("Unable to set git config core.bare to false for %s" % fulldestdir)
                 raise
 
         Git.unpack(self, ud, destdir, d)
