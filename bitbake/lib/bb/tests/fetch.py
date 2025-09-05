@@ -888,6 +888,18 @@ class FetcherLocalTest(FetcherTest):
         alt = os.path.join(self.unpackdir, 'git/.git/objects/info/alternates')
         self.assertFalse(os.path.exists(alt))
 
+    def test_localpaths(self):
+        localpaths = {
+            "file://archive.tar.gz":
+                f"{self.localsrcdir}/archive.tar.gz",
+            "https://downloads.yoctoproject.org/releases/bitbake/bitbake-1.0.tar.gz":
+                f"{self.dldir}/bitbake-1.0.tar.gz",
+            "git://git.openembedded.org/bitbake;branch=master;protocol=https;rev=270a05b0b4ba0959fe0624d2a4885d7b70426da5":
+                f"{self.dldir}/git2/git.openembedded.org.bitbake",
+        }
+        fetcher = bb.fetch2.Fetch(localpaths.keys(), self.d)
+        self.assertEqual(fetcher.localpaths(), list(localpaths.values()))
+
 class FetcherNoNetworkTest(FetcherTest):
     def setUp(self):
         super().setUp()
