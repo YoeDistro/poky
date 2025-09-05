@@ -33,10 +33,10 @@ class GitSM(Git):
         """
         return ud.type in ['gitsm']
 
-    def process_submodules(self, ud, workdir, function, d):
+    def process_submodules(self, ud, workdir, d):
         """
-        Iterate over all of the submodules in this repository and execute
-        the 'function' for each of them.
+        Iterate over all of the submodules in this repository and generate a
+        fetch object for all of them.
         """
 
         submodules = []
@@ -91,6 +91,7 @@ class GitSM(Git):
                 newud.path = os.path.normpath(os.path.join(newud.path, uris[m]))
                 uris[m] = Git._get_repo_url(self, newud)
 
+        urls = []
         for module in submodules:
             # Translate the module url into a SRC_URI
 
@@ -138,21 +139,21 @@ class GitSM(Git):
             # the user (See comment in git.py).
             # So, we will not take patches adding "user=" support here.
 
-            function(ud, url, module, paths[module], workdir, d)
+            urls.append(url)
 
-        return submodules != []
+        return Fetch(urls, d, cache=False) if urls else None
 
-    def call_process_submodules(self, ud, d, subfunc):
+    def call_process_submodules(self, ud, d):
         # If we're using a shallow mirror tarball it needs to be
         # unpacked temporarily so that we can examine the .gitmodules file
         # Unpack even when ud.clonedir is not available,
         # which may occur during a fast shallow clone
         if os.path.exists(ud.clonedir):
-            self.process_submodules(ud, ud.clonedir, subfunc, d)
+            return self.process_submodules(ud, ud.clonedir, d)
         elif ud.shallow and os.path.exists(ud.fullshallow):
             with tempfile.TemporaryDirectory(dir=d.getVar("DL_DIR")) as tmpdir:
                 runfetchcmd("tar -xzf %s" % ud.fullshallow, d, workdir=tmpdir)
-                self.process_submodules(ud, tmpdir, subfunc, d)
+                return self.process_submodules(ud, tmpdir, d)
         else:
             raise bb.fetch2.FetchError("Submodule source not available.")
 
@@ -160,50 +161,25 @@ class GitSM(Git):
         if Git.need_update(self, ud, d):
             return True
 
-        need_update_list = []
-        def need_update_submodule(ud, url, module, modpath, workdir, d):
-            try:
-                newfetch = Fetch([url], d, cache=False)
-                new_ud = newfetch.ud[url]
-                if new_ud.method.need_update(new_ud, d):
-                    need_update_list.append(modpath)
-            except Exception as e:
-                logger.error('gitsm: submodule update check failed: %s %s' % (type(e).__name__, str(e)))
-                need_update_result = True
+        need_update = False
+        fetch = self.call_process_submodules(ud, d)
+        if fetch:
+            for url in fetch.urls:
+                urldata = fetch.ud[url]
+                if urldata.method.need_update(urldata, d):
+                    need_update = True
 
-        self.call_process_submodules(ud, d, need_update_submodule)
-
-        if need_update_list:
-            logger.debug('gitsm: Submodules requiring update: %s' % (' '.join(need_update_list)))
-            return True
-
-        return False
+        return need_update
 
     def download(self, ud, d):
-        def download_submodule(ud, url, module, modpath, workdir, d):
-            # Is the following still needed?
-            #url += ";nocheckout=1"
-
-            try:
-                newfetch = Fetch([url], d, cache=False)
-                newfetch.download()
-            except Exception as e:
-                logger.error('gitsm: submodule download failed: %s %s' % (type(e).__name__, str(e)))
-                raise
-
         Git.download(self, ud, d)
-        self.call_process_submodules(ud, d, download_submodule)
+
+        fetch = self.call_process_submodules(ud, d)
+        if fetch:
+            fetch.download()
 
     def unpack(self, ud, destdir, d):
         fulldestdir = self.destdir(ud, destdir, d)
-
-        def unpack_submodules(ud, url, module, modpath, workdir, d):
-            try:
-                newfetch = Fetch([url], d, cache=False)
-                newfetch.unpack(root=destdir)
-            except Exception as e:
-                logger.error('gitsm: submodule unpack failed: %s %s' % (type(e).__name__, str(e)))
-                raise
 
         Git.unpack(self, ud, destdir, d)
 
@@ -228,35 +204,25 @@ class GitSM(Git):
                 logger.error("Unable to set git config core.bare to false for %s" % fulldestdir)
                 raise
 
-        ret = self.process_submodules(ud, fulldestdir, unpack_submodules, d)
+        fetch = self.process_submodules(ud, fulldestdir, d)
+        if fetch:
+            fetch.unpack(destdir)
 
-        if not ud.bareclone and ret:
+        if not ud.bareclone and fetch:
             cmdprefix = ""
             # Avoid LFS smudging (replacing the LFS pointers with the actual content) when LFS shouldn't be used but git-lfs is installed.
             if not self._need_lfs(ud):
                 cmdprefix = "GIT_LFS_SKIP_SMUDGE=1 "
             runfetchcmd("%s%s submodule update --recursive --no-fetch" % (cmdprefix, ud.basecmd), d, quiet=True, workdir=fulldestdir)
     def clean(self, ud, d):
-        def clean_submodule(ud, url, module, modpath, workdir, d):
-            try:
-                newfetch = Fetch([url], d, cache=False)
-                newfetch.clean()
-            except Exception as e:
-                logger.warning('gitsm: submodule clean failed: %s %s' % (type(e).__name__, str(e)))
-
-        self.call_process_submodules(ud, d, clean_submodule)
-
-        # Clean top git dir
+        fetch = self.call_process_submodules(ud, d)
+        if fetch:
+            fetch.clean()
         Git.clean(self, ud, d)
 
     def implicit_urldata(self, ud, d):
-        import subprocess
+        fetch = self.call_process_submodules(ud, d)
+        if fetch:
+            return fetch.expanded_urldata()
 
-        urldata = []
-        def add_submodule(ud, url, module, modpath, workdir, d):
-            newfetch = Fetch([url], d, cache=False)
-            urldata.extend(newfetch.expanded_urldata())
-
-        self.call_process_submodules(ud, d, add_submodule)
-
-        return urldata
+        return []
