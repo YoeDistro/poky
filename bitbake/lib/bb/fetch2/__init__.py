@@ -1226,9 +1226,10 @@ def srcrev_internal_helper(ud, d, name):
         attempts.append("SRCREV_%s:pn-%s" % (name, pn))
     if name != '':
         attempts.append("SRCREV_%s" % name)
-    if pn:
-        attempts.append("SRCREV:pn-%s" % pn)
-    attempts.append("SRCREV")
+    if name == 'default' or 'rev' not in ud.parm:
+        if pn:
+            attempts.append("SRCREV:pn-%s" % pn)
+        attempts.append("SRCREV")
 
     for a in attempts:
         srcrev = d.getVar(a)
