@@ -198,25 +198,28 @@ class GitSM(Git):
         self.call_process_submodules(ud, d, self.need_update(ud, d), download_submodule)
 
     def unpack(self, ud, destdir, d):
-        subdestdir = self.destdir(ud, destdir, d)
+        fulldestdir = self.destdir(ud, destdir, d)
 
         def unpack_submodules(ud, url, module, modpath, workdir, d):
             try:
                 newfetch = Fetch([url], d, cache=False)
-                new_ud = newfetch.ud[url]
-                parentdir = new_ud.parm['parentdir']
-                if not os.path.isabs(parentdir):
-                    parentdir = os.path.join(destdir, parentdir)
-                fulldestdir = self.destdir(new_ud, destdir, d)
                 newfetch.unpack(root=destdir)
             except Exception as e:
                 logger.error('gitsm: submodule unpack failed: %s %s' % (type(e).__name__, str(e)))
                 raise
 
-            local_path = newfetch.localpath(url)
+        Git.unpack(self, ud, destdir, d)
+
+        parentdir = ud.parm.get('parentdir')
+        if parentdir:
+            module = ud.parm['subpath']
+            if not os.path.isabs(parentdir):
+                parentdir = os.path.join(destdir, parentdir)
+
+            ud.setup_localpath(d)
 
             # Correct the submodule references to the local download version...
-            runfetchcmd("%(basecmd)s config submodule.%(module)s.url %(url)s" % {'basecmd': ud.basecmd, 'module': module, 'url' : local_path}, d, workdir=parentdir)
+            runfetchcmd("%(basecmd)s config submodule.%(module)s.url %(url)s" % {'basecmd': ud.basecmd, 'module': module, 'url' : ud.localpath}, d, workdir=parentdir)
 
             if ud.shallow:
                 runfetchcmd("%(basecmd)s config submodule.%(module)s.shallow true" % {'basecmd': ud.basecmd, 'module': module}, d, workdir=parentdir)
@@ -228,16 +231,14 @@ class GitSM(Git):
                 logger.error("Unable to set git config core.bare to false for %s" % fulldestdir)
                 raise
 
-        Git.unpack(self, ud, destdir, d)
-
-        ret = self.process_submodules(ud, subdestdir, unpack_submodules, d)
+        ret = self.process_submodules(ud, fulldestdir, unpack_submodules, d)
 
         if not ud.bareclone and ret:
             cmdprefix = ""
             # Avoid LFS smudging (replacing the LFS pointers with the actual content) when LFS shouldn't be used but git-lfs is installed.
             if not self._need_lfs(ud):
                 cmdprefix = "GIT_LFS_SKIP_SMUDGE=1 "
-            runfetchcmd("%s%s submodule update --recursive --no-fetch" % (cmdprefix, ud.basecmd), d, quiet=True, workdir=subdestdir)
+            runfetchcmd("%s%s submodule update --recursive --no-fetch" % (cmdprefix, ud.basecmd), d, quiet=True, workdir=fulldestdir)
     def clean(self, ud, d):
         def clean_submodule(ud, url, module, modpath, workdir, d):
             try:
