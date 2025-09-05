@@ -136,11 +136,6 @@ class GitSM(Git):
             #ld.setVar('SRC_URI', url)
             ld.setVar('SRCREV_%s' % module, subrevision[module])
 
-            # Workaround for issues with SRCPV/SRCREV_FORMAT errors
-            # error refer to 'multiple' repositories.  Only the repository
-            # in the original SRC_URI actually matters...
-            ld.setVar('SRCREV_FORMAT', module)
-
             function(ud, url, module, paths[module], workdir, ld)
 
         return submodules != []
