@@ -124,6 +124,7 @@ class GitSM(Git):
             url += ";nobranch=1"
             url += ";lfs=%s" % ("1" if self._need_lfs(ud) else "0")
             url += ";rev=%s" % subrevision[module]
+            url += ";bareclone=1"
             # Note that adding "user=" here to give credentials to the
             # submodule is not supported. Since using SRC_URI to give git://
             # URL a password is not supported, one have to use one of the
@@ -157,8 +158,6 @@ class GitSM(Git):
 
         need_update_list = []
         def need_update_submodule(ud, url, module, modpath, workdir, d):
-            url += ";bareclone=1;nobranch=1"
-
             try:
                 newfetch = Fetch([url], d, cache=False)
                 new_ud = newfetch.ud[url]
@@ -178,8 +177,6 @@ class GitSM(Git):
 
     def download(self, ud, d):
         def download_submodule(ud, url, module, modpath, workdir, d):
-            url += ";bareclone=1;nobranch=1"
-
             # Is the following still needed?
             #url += ";nocheckout=1"
 
@@ -197,8 +194,6 @@ class GitSM(Git):
         subdestdir = self.destdir(ud, destdir, d)
 
         def unpack_submodules(ud, url, module, modpath, workdir, d):
-            url += ";bareclone=1;nobranch=1"
-
             # Figure out where we clone over the bare submodules...
             if ud.bareclone:
                 repo_conf = ''
@@ -239,7 +234,6 @@ class GitSM(Git):
             runfetchcmd("%s%s submodule update --recursive --no-fetch" % (cmdprefix, ud.basecmd), d, quiet=True, workdir=subdestdir)
     def clean(self, ud, d):
         def clean_submodule(ud, url, module, modpath, workdir, d):
-            url += ";bareclone=1;nobranch=1"
             try:
                 newfetch = Fetch([url], d, cache=False)
                 newfetch.clean()
@@ -256,7 +250,6 @@ class GitSM(Git):
 
         urldata = []
         def add_submodule(ud, url, module, modpath, workdir, d):
-            url += ";bareclone=1;nobranch=1"
             newfetch = Fetch([url], d, cache=False)
             urldata.extend(newfetch.expanded_urldata())
 
