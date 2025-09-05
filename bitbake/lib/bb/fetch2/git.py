@@ -656,30 +656,37 @@ class Git(FetchMethod):
         # The url is local ud.clonedir, set it to upstream one
         runfetchcmd("%s remote set-url origin %s" % (ud.basecmd, shlex.quote(repourl)), d, workdir=dest)
 
-    def unpack(self, ud, destdir, d):
-        """ unpack the downloaded src to destdir"""
-
+    def destdir(self, ud, destdir, d):
         subdir = ud.parm.get("subdir")
         subpath = ud.parm.get("subpath")
-        readpathspec = ""
         def_destsuffix = (d.getVar("BB_GIT_DEFAULT_DESTSUFFIX") or "git") + "/"
 
         if subpath:
-            readpathspec = ":%s" % subpath
             def_destsuffix = "%s/" % os.path.basename(subpath.rstrip('/'))
 
         if subdir:
-            # If 'subdir' param exists, create a dir and use it as destination for unpack cmd
             if os.path.isabs(subdir):
-                if not os.path.realpath(subdir).startswith(os.path.realpath(destdir)):
-                    raise bb.fetch2.UnpackError("subdir argument isn't a subdirectory of unpack root %s" % destdir, ud.url)
                 destdir = subdir
             else:
                 destdir = os.path.join(destdir, subdir)
             def_destsuffix = ""
 
         destsuffix = ud.parm.get("destsuffix", def_destsuffix)
-        destdir = ud.destdir = os.path.join(destdir, destsuffix)
+        return os.path.join(destdir, destsuffix)
+
+    def unpack(self, ud, destdir, d):
+        """ unpack the downloaded src to destdir"""
+
+        subpath = ud.parm.get("subpath")
+        readpathspec = ""
+        if subpath:
+            readpathspec = ":%s" % subpath
+
+        root = destdir
+        destdir = self.destdir(ud, root, d)
+        if not os.path.realpath(destdir).startswith(os.path.realpath(root)):
+            raise bb.fetch2.UnpackError("subdir argument isn't a subdirectory of unpack root %s" % root, ud.url)
+
         if os.path.exists(destdir):
             bb.utils.prunedir(destdir)
         if not ud.bareclone:

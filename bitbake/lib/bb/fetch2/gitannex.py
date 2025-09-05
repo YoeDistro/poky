@@ -65,13 +65,15 @@ class GitANNEX(Git):
     def unpack(self, ud, destdir, d):
         Git.unpack(self, ud, destdir, d)
 
+        destdir = self.destdir(ud, destdir, d)
+
         try:
-            runfetchcmd("%s annex init" % (ud.basecmd), d, workdir=ud.destdir)
+            runfetchcmd("%s annex init" % (ud.basecmd), d, workdir=destdir)
         except bb.fetch.FetchError:
             pass
 
-        annex = self.uses_annex(ud, d, ud.destdir)
+        annex = self.uses_annex(ud, d, destdir)
         if annex:
-            runfetchcmd("%s annex get" % (ud.basecmd), d, workdir=ud.destdir)
-            runfetchcmd("chmod u+w -R %s/.git/annex" % (ud.destdir), d, quiet=True, workdir=ud.destdir)
+            runfetchcmd("%s annex get" % (ud.basecmd), d, workdir=destdir)
+            runfetchcmd("chmod u+w -R %s/.git/annex" % (destdir), d, quiet=True, workdir=destdir)
 
