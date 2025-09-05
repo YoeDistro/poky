@@ -20,7 +20,6 @@ NOTE: Switching a SRC_URI from "git://" to "gitsm://" requires a clean of your r
 import os
 import bb
 import copy
-import shutil
 import tempfile
 from   bb.fetch2.git import Git
 from   bb.fetch2 import runfetchcmd
@@ -151,12 +150,9 @@ class GitSM(Git):
         if os.path.exists(ud.clonedir):
             self.process_submodules(ud, ud.clonedir, subfunc, d)
         elif ud.shallow and os.path.exists(ud.fullshallow):
-            tmpdir = tempfile.mkdtemp(dir=d.getVar("DL_DIR"))
-            try:
+            with tempfile.TemporaryDirectory(dir=d.getVar("DL_DIR")) as tmpdir:
                 runfetchcmd("tar -xzf %s" % ud.fullshallow, d, workdir=tmpdir)
                 self.process_submodules(ud, tmpdir, subfunc, d)
-            finally:
-                shutil.rmtree(tmpdir)
         else:
             raise bb.fetch2.FetchError("Submodule source not available.")
 
