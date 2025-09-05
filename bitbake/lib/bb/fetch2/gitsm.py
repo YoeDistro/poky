@@ -127,6 +127,7 @@ class GitSM(Git):
             url += ";bareclone=1"
 
             parentdir = self.destdir(ud, '', d)
+            url += ";parentdir=%s" % parentdir
             gitdir = '' if ud.bareclone else '.git'
             subdir = os.path.join(parentdir, gitdir, 'modules', module)
             url += ";subdir=%s" % subdir
@@ -203,6 +204,9 @@ class GitSM(Git):
             try:
                 newfetch = Fetch([url], d, cache=False)
                 new_ud = newfetch.ud[url]
+                parentdir = new_ud.parm['parentdir']
+                if not os.path.isabs(parentdir):
+                    parentdir = os.path.join(destdir, parentdir)
                 fulldestdir = self.destdir(new_ud, destdir, d)
                 newfetch.unpack(root=destdir)
             except Exception as e:
@@ -212,10 +216,10 @@ class GitSM(Git):
             local_path = newfetch.localpath(url)
 
             # Correct the submodule references to the local download version...
-            runfetchcmd("%(basecmd)s config submodule.%(module)s.url %(url)s" % {'basecmd': ud.basecmd, 'module': module, 'url' : local_path}, d, workdir=subdestdir)
+            runfetchcmd("%(basecmd)s config submodule.%(module)s.url %(url)s" % {'basecmd': ud.basecmd, 'module': module, 'url' : local_path}, d, workdir=parentdir)
 
             if ud.shallow:
-                runfetchcmd("%(basecmd)s config submodule.%(module)s.shallow true" % {'basecmd': ud.basecmd, 'module': module}, d, workdir=subdestdir)
+                runfetchcmd("%(basecmd)s config submodule.%(module)s.shallow true" % {'basecmd': ud.basecmd, 'module': module}, d, workdir=parentdir)
 
             # Ensure the submodule repository is NOT set to bare, since we're checking it out...
             try:
