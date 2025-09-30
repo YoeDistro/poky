@@ -87,6 +87,8 @@ PACKAGECONFIG[thin-lto] = "-DLLVM_ENABLE_LTO=Thin -DLLVM_BINUTILS_INCDIR=${STAGI
 # so they're just hundreds of megabytes.
 DEBUG_LEVELFLAG = "-g1"
 
+CXXFLAGS:append:class-native = " -std=gnu++17"
+
 reproducible_build_variables() {
     sed -i -e "s,${DEBUG_PREFIX_MAP},,g" \
         -e "s,--sysroot=${RECIPE_SYSROOT},,g" \
