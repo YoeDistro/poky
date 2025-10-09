@@ -714,6 +714,11 @@ class DataSmart(MutableMapping):
         self.varhistory.record(**loginfo)
         self.setVar(var + ":prepend", value, ignore=True, parsing=True)
 
+    def removeFromVar(self, var, value, **loginfo):
+        loginfo['op'] = 'remove'
+        self.varhistory.record(**loginfo)
+        self.setVar(var + ":remove", value, ignore=True, parsing=True)
+
     def delVar(self, var, **loginfo):
         self.expand_cache = {}
 
