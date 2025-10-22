@@ -133,12 +133,19 @@ def read_results(repo, tags, xml=True):
     if xml:
         git_objs = [tag + ':metadata.xml' for tag in tags] + [tag + ':results.xml' for tag in tags]
         data = parse_xml_stream(repo.run_cmd(['show'] + git_objs + ['--']))
-        return ([metadata_xml_to_json(e) for e in data[0:num_revs]],
-                [results_xml_to_json(e) for e in data[num_revs:]])
+        metadata, results = ([metadata_xml_to_json(e) for e in data[0:num_revs]],
+                             [results_xml_to_json(e) for e in data[num_revs:]])
     else:
         git_objs = [tag + ':metadata.json' for tag in tags] + [tag + ':results.json' for tag in tags]
         data = parse_json_stream(repo.run_cmd(['show'] + git_objs + ['--']))
-        return data[0:num_revs], data[num_revs:]
+        metadata, results = data[0:num_revs], data[num_revs:]
+
+    # Filter on results with version matching the last one
+    valid_bitbake = metadata[-1]['bitbake']['commit']
+    valid_meta_yocto = metadata[-1]['layers']['meta-poky']['commit']
+    return zip(*[(m, r) for m, r in zip(metadata, results)
+                 if m['bitbake']['commit'] == valid_bitbake
+                 and m['layers']['meta-poky']['commit'] == valid_meta_yocto])
 
 
 def get_data_item(data, key):
