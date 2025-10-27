@@ -69,6 +69,11 @@ do_rust_setup_snapshot[dirs] += "${WORKDIR}/rust-snapshot"
 do_rust_setup_snapshot[vardepsexclude] += "UNINATIVE_LOADER"
 do_rust_setup_snapshot[depends] += "patchelf-native:do_populate_sysroot"
 
+# Pass zlib/zstd link flags to the target linker wrapper via WRAPPER_TARGET_EXTRALD.
+# This ensures LLVM-using components (like rustc_codegen_llvm) can find compression libraries.
+# The wrapper will split this into separate arguments automatically.
+WRAPPER_TARGET_EXTRALD:append:class-target = " -lz -lzstd"
+
 RUSTC_BOOTSTRAP = "${STAGING_BINDIR_NATIVE}/rustc"
 CARGO_BOOTSTRAP = "${STAGING_BINDIR_NATIVE}/cargo"
 RUSTC_BOOTSTRAP:class-native = "${WORKDIR}/rust-snapshot/bin/rustc"

@@ -149,7 +149,7 @@ create_wrapper_rust () {
 	binary = orig_binary.split()[0]
 	args = orig_binary.split() + sys.argv[1:]
 	if extras:
-	    args.append(extras)
+	    args.extend(extras.split())
 	os.execvp(binary, args)
 	EOF
 	chmod +x "${file}"
