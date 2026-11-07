@@ -31,7 +31,7 @@ kernel that branches off ``linux.org`` version 4.12 and the
 ``yocto-kernel-cache``, which contains stores of kernel Metadata::
 
    $ git clone https://git.yoctoproject.org/linux-yocto-4.12
-   $ git clone https://git.yoctoproject.org/linux-kernel-cache
+   $ git clone https://git.yoctoproject.org/yocto-kernel-cache
 
 For more information on
 how to set up a local Git repository of the Yocto Project Linux kernel
@@ -52,7 +52,7 @@ the "yocto-4.12" branch of the ``yocto-kernel-cache`` repository::
 
    $ cd ~/linux-yocto-4.12
    $ git checkout -b my-kernel-4.12 remotes/origin/standard/beagleboard
-   $ cd ~/linux-kernel-cache
+   $ cd ~/yocto-kernel-cache
    $ git checkout -b my-4.12-metadata remotes/origin/yocto-4.12
 
 .. note::
